@@ -975,7 +975,11 @@ public final class MatrixFont8 {
     public static final int[] getCharacter(final char CHAR) {
         int ascii = (int) CHAR;
         if (ascii < 32 || ascii > 126) { return ASCII_32_126[0]; }
-
         return ASCII_32_126[ascii - 32];
+    }
+
+    public static final int[] getDigit(final int DIGIT) {
+        if (DIGIT < 0 || DIGIT > 9) { return ASCII_32_126[0]; }
+        return DIGITS[DIGIT];
     }
 }
