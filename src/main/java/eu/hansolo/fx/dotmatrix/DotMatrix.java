@@ -130,6 +130,11 @@ public class DotMatrix extends Region {
     public Color getDotOffColor() { return convertToColor(dotOffColor); }
     public void setDotOffColor(final Color COLOR) {
         dotOffColor = convertToInt(COLOR);
+        for (int y = 0 ; y < rows ; y++) {
+            for (int x = 0 ; x < cols ; x++) {
+                matrix[x][y] = dotOffColor;
+            }
+        }
         drawMatrix();
     }
 
@@ -153,6 +158,17 @@ public class DotMatrix extends Region {
     public void setCharAt(final char CHAR, final int X, final int Y) { setCharAt(CHAR, X, Y, dotOnColor); }
     public void setCharAt(final char CHAR, final int X, final int Y, final int COLOR_VALUE) {
         int[] a = MatrixFont8.getCharacter(CHAR);
+        for (int x = 0; x < 8; x++) {
+            for (int y = 0; y < 8; y++) {
+                setPixel(x + X, y + Y, getBitAt(7 - x, y, a) == 0 ? dotOffColor : COLOR_VALUE);
+            }
+        }
+        drawMatrix();
+    }
+
+    public void setDigitAt(final int DIGIT, final int X, final int Y) { setDigitAt(DIGIT, X, Y, dotOnColor); }
+    public void setDigitAt(final int DIGIT, final int X, final int Y, final int COLOR_VALUE) {
+        int[] a = MatrixFont8.getDigit(DIGIT);
         for (int x = 0; x < 8; x++) {
             for (int y = 0; y < 8; y++) {
                 setPixel(x + X, y + Y, getBitAt(7 - x, y, a) == 0 ? dotOffColor : COLOR_VALUE);

@@ -27,6 +27,8 @@ import javafx.stage.Stage;
 import javafx.scene.layout.StackPane;
 import javafx.scene.Scene;
 
+import java.util.Random;
+
 
 /**
  * User: hansolo
@@ -34,15 +36,16 @@ import javafx.scene.Scene;
  * Time: 05:00
  */
 public class Demo extends Application {
-    private static final int LIME = DotMatrix.convertToInt(Color.LIME);
-    private static final int RED  = DotMatrix.convertToInt(Color.RED);
-    private int            x;
-    private DotMatrix      matrix;
-    private String         text;
-    private int            textLength;
-    private int            textLengthInPixel;
-    private long           lastTimerCall;
-    private AnimationTimer timer;
+    private static final Random         RND  = new Random();
+    private static final int            LIME = DotMatrix.convertToInt(Color.LIME);
+    private static final int            RED  = DotMatrix.convertToInt(Color.RED);
+    private              int            x;
+    private              DotMatrix      matrix;
+    private              String         text;
+    private              int            textLength;
+    private              int            textLengthInPixel;
+    private              long           lastTimerCall;
+    private              AnimationTimer timer;
 
 
     @Override public void init() {
@@ -64,6 +67,7 @@ public class Demo extends Application {
                     if (x < -textLengthInPixel) { x = matrix.getCols() + 7; }
                     for (int i = 0 ; i < textLength ; i++) {
                         matrix.setCharAt(text.charAt(i), x + i * 8, 4, i % 2 == 0 ? LIME : RED);
+                        //matrix.setDigitAt(RND.nextInt(9), x + i * 8, 4, i % 2 == 0 ? LIME : RED);
                     }
                     x--;
                     lastTimerCall = now;
