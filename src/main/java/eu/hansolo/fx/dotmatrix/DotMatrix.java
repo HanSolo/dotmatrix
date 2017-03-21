@@ -190,7 +190,7 @@ public class DotMatrix extends Region {
     private long getBlue(final long COLOR_VALUE) { return (COLOR_VALUE & BLUE_MASK); }
     private long getAlpha(final long COLOR_VALUE) { return (COLOR_VALUE & ALPHA_MASK) >>> 24; }
 
-    private void drawMatrix() {
+    public void drawMatrix() {
         ctx.clearRect(0, 0, width, height);
         for (int y = 0; y < rows; y++) {
             for (int x = 0; x < cols; x++) {
