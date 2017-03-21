@@ -57,19 +57,19 @@ public class DotMatrix extends Region {
 
     // ******************** Constructors **************************************
     public DotMatrix() {
-        this(250, 250, 32, 32, Color.rgb(255, 55, 0));
+        this(250, 250, 32, 32, Color.rgb(255, 55, 0), Color.rgb(51, 51, 51, 0.5));
     }
     public DotMatrix(final int COLS, final int ROWS) {
-        this(250, 250, COLS, ROWS, Color.rgb(255, 55, 0));
+        this(250, 250, COLS, ROWS, Color.rgb(255, 55, 0), Color.rgb(51, 51, 51, 0.5));
     }
     public DotMatrix(final int COLS, final int ROWS, final Color DOT_ON_COLOR) {
-        this(250, 250, COLS, ROWS, DOT_ON_COLOR);
+        this(250, 250, COLS, ROWS, DOT_ON_COLOR, Color.rgb(51, 51, 51, 0.5));
     }
-    public DotMatrix(final double PREFERRED_WIDTH, final double PREFERRED_HEIGHT, final int COLS, final int ROWS, final Color DOT_ON_COLOR) {
+    public DotMatrix(final double PREFERRED_WIDTH, final double PREFERRED_HEIGHT, final int COLS, final int ROWS, final Color DOT_ON_COLOR, final Color DOT_OFF_COLOR) {
         preferredWidth  = PREFERRED_WIDTH;
         preferredHeight = PREFERRED_HEIGHT;
-        dotOnColor      = convertToLong(DOT_ON_COLOR);
-        dotOffColor     = convertToLong(Color.rgb(51, 51, 51, 0.5));
+        dotOnColor      = convertToInt(DOT_ON_COLOR);
+        dotOffColor     = convertToInt(DOT_OFF_COLOR);
         cols            = COLS;
         rows            = ROWS;
         matrix          = new int[cols][rows];
@@ -123,18 +123,18 @@ public class DotMatrix extends Region {
 
     public Color getDotOnColor() { return convertToColor(dotOnColor); }
     public void setDotOnColor(final Color COLOR) {
-        dotOnColor = convertToLong(COLOR);
+        dotOnColor = convertToInt(COLOR);
         drawMatrix();
     }
 
     public Color getDotOffColor() { return convertToColor(dotOffColor); }
     public void setDotOffColor(final Color COLOR) {
-        dotOffColor = convertToLong(COLOR);
+        dotOffColor = convertToInt(COLOR);
         drawMatrix();
     }
 
     public void setPixel(final int X, final int Y, final boolean VALUE) { setPixel(X, Y, VALUE ? dotOnColor : dotOffColor); }
-    public void setPixel(final int X, final int Y, final Color COLOR) { setPixel(X, Y, convertToLong(COLOR)); }
+    public void setPixel(final int X, final int Y, final Color COLOR) { setPixel(X, Y, convertToInt(COLOR)); }
     public void setPixel(final int X, final int Y, final int COLOR_VALUE) {
         if (X >= cols || X < 0) return;
         if (Y >= rows || Y < 0) return;
@@ -168,10 +168,10 @@ public class DotMatrix extends Region {
         return Color.rgb((COLOR_VALUE & RED_MASK) >> 16, (COLOR_VALUE & GREEN_MASK) >> 8, (COLOR_VALUE & BLUE_MASK), ALPHA_FACTOR * ((COLOR_VALUE & ALPHA_MASK) >>> 24));
     }
 
-    public static int convertToLong(final Color COLOR) {
-        return convertToLong((float) COLOR.getRed(), (float) COLOR.getGreen(), (float) COLOR.getBlue(), (float) COLOR.getOpacity());
+    public static int convertToInt(final Color COLOR) {
+        return convertToInt((float) COLOR.getRed(), (float) COLOR.getGreen(), (float) COLOR.getBlue(), (float) COLOR.getOpacity());
     }
-    public static int convertToLong(final float RED, final float GREEN, final float BLUE, final float ALPHA) {
+    public static int convertToInt(final float RED, final float GREEN, final float BLUE, final float ALPHA) {
         int red   = Math.round(255 * RED);
         int green = Math.round(255 * GREEN);
         int blue  = Math.round(255 * BLUE);
