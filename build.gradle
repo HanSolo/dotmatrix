@@ -12,3 +12,9 @@ repositories {
 dependencies {
 
 }
+
+// start the demo from gradle
+task Demo(type: JavaExec) {
+    main = "eu.hansolo.fx.dotmatrix.Demo"
+    classpath = sourceSets.main.runtimeClasspath
+}
