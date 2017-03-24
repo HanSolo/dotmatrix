@@ -42,7 +42,6 @@ public class Demo extends Application {
     private              String         text;
     private              int            textLength;
     private              int            textLengthInPixel;
-    private              MatrixFont     matrixFont;
     private              int            offset;
     private              long           lastTimerCall;
     private              AnimationTimer timer;
@@ -60,7 +59,6 @@ public class Demo extends Application {
         text              = "8x8 Font Round Dots (@hansolo_) ";
         textLength        = text.length();
         textLengthInPixel = textLength * 8;
-        matrixFont        = matrix.getMatrixFont();
         offset            = 3;
 
         lastTimerCall = System.nanoTime();
@@ -69,7 +67,7 @@ public class Demo extends Application {
                 if (now > lastTimerCall + 10_000_000l) {
                     if (x < -textLengthInPixel) {
                         x = matrix.getCols() + 7;
-                        if (matrixFont.equals(MatrixFont8x8.INSTANCE)) {
+                        if (matrix.getMatrixFont().equals(MatrixFont8x8.INSTANCE)) {
                             matrix.setMatrixFont(MatrixFont8x11.INSTANCE);
                             text       = "8x11 Font Square Dots (@hansolo_) ";
                             offset     = 1;
@@ -85,7 +83,6 @@ public class Demo extends Application {
                     }
                     for (int i = 0 ; i < textLength ; i++) {
                         matrix.setCharAt(text.charAt(i), x + i * 8, offset, i % 2 == 0 ? LIME : RED);
-                        //matrix.setDigitAt(RND.nextInt(9), x + i * 8, 4, i % 2 == 0 ? LIME : RED);
                     }
                     x--;
                     lastTimerCall = now;
