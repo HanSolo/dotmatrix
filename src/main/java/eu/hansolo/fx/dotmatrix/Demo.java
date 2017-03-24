@@ -54,12 +54,13 @@ public class Demo extends Application {
                                             .colsAndRows(128, 13)
                                             .dotOnColor(Color.rgb(255, 55, 0))
                                             .dotShape(DotShape.ROUND)
+                                            .matrixFont(MatrixFont8x8.INSTANCE)
                                             .build();
         x                 = matrix.getCols() + 7;
         text              = "8x8 Font Round Dots (@hansolo_) ";
         textLength        = text.length();
         textLengthInPixel = textLength * 8;
-        matrixFont        = MatrixFont8x8.INSTANCE;
+        matrixFont        = matrix.getMatrixFont();
         offset            = 3;
 
         lastTimerCall = System.nanoTime();

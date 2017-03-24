@@ -67,6 +67,11 @@ public class DotMatrixBuilder<B extends DotMatrixBuilder<B>> {
         return (B)this;
     }
 
+    public final B matrixFont(final MatrixFont FONT) {
+        properties.put("matrixFont", new SimpleObjectProperty(FONT));
+        return (B)this;
+    }
+
     public final B prefSize(final double WIDTH, final double HEIGHT) {
         properties.put("prefSize", new SimpleObjectProperty<>(new Dimension2D(WIDTH, HEIGHT)));
         return (B)this;
@@ -191,7 +196,9 @@ public class DotMatrixBuilder<B extends DotMatrixBuilder<B>> {
                 CONTROL.setDotOffColor(((ObjectProperty<Color>) properties.get(key)).get());
             } else if ("dotShape".equals(key)) {
                 CONTROL.setDotShape(((ObjectProperty<DotShape>) properties.get(key)).get());
-            }
+            } else if ("matrixFont".equals(key)) {
+                CONTROL.setMatrixFont(((ObjectProperty<MatrixFont>) properties.get(key)).get());
+            };
         }
         return CONTROL;
     }

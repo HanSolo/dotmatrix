@@ -63,15 +63,15 @@ public class DotMatrix extends Region {
 
     // ******************** Constructors **************************************
     public DotMatrix() {
-        this(250, 250, 32, 32, Color.rgb(255, 55, 0), Color.rgb(51, 51, 51, 0.5), DotShape.ROUND);
+        this(250, 250, 32, 32, Color.rgb(255, 55, 0), Color.rgb(51, 51, 51, 0.5), DotShape.ROUND, MatrixFont8x8.INSTANCE);
     }
     public DotMatrix(final int COLS, final int ROWS) {
-        this(250, 250, COLS, ROWS, Color.rgb(255, 55, 0), Color.rgb(51, 51, 51, 0.5), DotShape.ROUND);
+        this(250, 250, COLS, ROWS, Color.rgb(255, 55, 0), Color.rgb(51, 51, 51, 0.5), DotShape.ROUND, MatrixFont8x8.INSTANCE);
     }
     public DotMatrix(final int COLS, final int ROWS, final Color DOT_ON_COLOR) {
-        this(250, 250, COLS, ROWS, DOT_ON_COLOR, Color.rgb(51, 51, 51, 0.5), DotShape.ROUND);
+        this(250, 250, COLS, ROWS, DOT_ON_COLOR, Color.rgb(51, 51, 51, 0.5), DotShape.ROUND, MatrixFont8x8.INSTANCE);
     }
-    public DotMatrix(final double PREFERRED_WIDTH, final double PREFERRED_HEIGHT, final int COLS, final int ROWS, final Color DOT_ON_COLOR, final Color DOT_OFF_COLOR, final DotShape DOT_SHAPE) {
+    public DotMatrix(final double PREFERRED_WIDTH, final double PREFERRED_HEIGHT, final int COLS, final int ROWS, final Color DOT_ON_COLOR, final Color DOT_OFF_COLOR, final DotShape DOT_SHAPE, final MatrixFont FONT) {
         preferredWidth         = PREFERRED_WIDTH;
         preferredHeight        = PREFERRED_HEIGHT;
         dotOnColor             = convertToInt(DOT_ON_COLOR);
@@ -80,7 +80,7 @@ public class DotMatrix extends Region {
         cols                   = COLS;
         rows                   = ROWS;
         matrix                 = new int[cols][rows];
-        matrixFont             = MatrixFont8x8.INSTANCE;
+        matrixFont             = FONT;
         characterWidth         = matrixFont.getCharacterWidth();
         characterHeight        = matrixFont.getCharacterHeight();
         characterWidthMinusOne = characterWidth - 1;
