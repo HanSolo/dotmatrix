@@ -28,8 +28,6 @@ import javafx.stage.Stage;
 import javafx.scene.layout.StackPane;
 import javafx.scene.Scene;
 
-import java.util.Random;
-
 
 /**
  * User: hansolo
@@ -37,7 +35,6 @@ import java.util.Random;
  * Time: 05:00
  */
 public class Demo extends Application {
-    private static final Random         RND  = new Random();
     private static final int            LIME = DotMatrix.convertToInt(Color.LIME);
     private static final int            RED  = DotMatrix.convertToInt(Color.RED);
     private              int            x;
@@ -45,30 +42,48 @@ public class Demo extends Application {
     private              String         text;
     private              int            textLength;
     private              int            textLengthInPixel;
+    private              MatrixFont     matrixFont;
+    private              int            offset;
     private              long           lastTimerCall;
     private              AnimationTimer timer;
 
 
     @Override public void init() {
         matrix            = DotMatrixBuilder.create()
-                                            //.prefSize(250, 50)
-                                            .prefSize(264, 33)
-                                            .colsAndRows(128, 16)
+                                            .prefSize(500, 50)
+                                            .colsAndRows(128, 13)
                                             .dotOnColor(Color.rgb(255, 55, 0))
                                             .dotShape(DotShape.ROUND)
                                             .build();
         x                 = matrix.getCols() + 7;
-        text              = "follow me on twitter @hansolo_ ";
+        text              = "8x8 Font Round Dots (@hansolo_) ";
         textLength        = text.length();
         textLengthInPixel = textLength * 8;
+        matrixFont        = MatrixFont8x8.INSTANCE;
+        offset            = 3;
 
         lastTimerCall = System.nanoTime();
         timer = new AnimationTimer() {
             @Override public void handle(final long now) {
                 if (now > lastTimerCall + 10_000_000l) {
-                    if (x < -textLengthInPixel) { x = matrix.getCols() + 7; }
+                    if (x < -textLengthInPixel) {
+                        x = matrix.getCols() + 7;
+                        if (matrixFont.equals(MatrixFont8x8.INSTANCE)) {
+                            matrix.setMatrixFont(MatrixFont8x11.INSTANCE);
+                            text       = "8x11 Font Square Dots (@hansolo_) ";
+                            offset     = 1;
+                            matrix.setDotShape(DotShape.SQUARE);
+                        } else {
+                            matrix.setMatrixFont(MatrixFont8x8.INSTANCE);
+                            text       = "8x8 Font Round Dots (@hansolo_) ";
+                            offset     = 3;
+                            matrix.setDotShape(DotShape.ROUND);
+                        }
+                        textLength        = text.length();
+                        textLengthInPixel = textLength * 8;
+                    }
                     for (int i = 0 ; i < textLength ; i++) {
-                        matrix.setCharAt(text.charAt(i), x + i * 8, 4, i % 2 == 0 ? LIME : RED);
+                        matrix.setCharAt(text.charAt(i), x + i * 8, offset, i % 2 == 0 ? LIME : RED);
                         //matrix.setDigitAt(RND.nextInt(9), x + i * 8, 4, i % 2 == 0 ? LIME : RED);
                     }
                     x--;

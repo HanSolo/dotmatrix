@@ -17,9 +17,6 @@
 package eu.hansolo.fx.dotmatrix;
 
 import javafx.beans.DefaultProperty;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.IntegerPropertyBase;
-import javafx.beans.property.ObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
@@ -55,6 +52,10 @@ public class DotMatrix extends Region {
     private              int                      cols;
     private              int                      rows;
     private              int[][]                  matrix;
+    private              MatrixFont               matrixFont;
+    private              int                      characterWidth;
+    private              int                      characterHeight;
+    private              int                      characterWidthMinusOne;
     private              double                   dotSize;
     private              double                   spacer;
     private              double                   dotSizeMinusDoubleSpacer;
@@ -71,14 +72,18 @@ public class DotMatrix extends Region {
         this(250, 250, COLS, ROWS, DOT_ON_COLOR, Color.rgb(51, 51, 51, 0.5), DotShape.ROUND);
     }
     public DotMatrix(final double PREFERRED_WIDTH, final double PREFERRED_HEIGHT, final int COLS, final int ROWS, final Color DOT_ON_COLOR, final Color DOT_OFF_COLOR, final DotShape DOT_SHAPE) {
-        preferredWidth  = PREFERRED_WIDTH;
-        preferredHeight = PREFERRED_HEIGHT;
-        dotOnColor      = convertToInt(DOT_ON_COLOR);
-        dotOffColor     = convertToInt(DOT_OFF_COLOR);
-        dotShape        = DOT_SHAPE;
-        cols            = COLS;
-        rows            = ROWS;
-        matrix          = new int[cols][rows];
+        preferredWidth         = PREFERRED_WIDTH;
+        preferredHeight        = PREFERRED_HEIGHT;
+        dotOnColor             = convertToInt(DOT_ON_COLOR);
+        dotOffColor            = convertToInt(DOT_OFF_COLOR);
+        dotShape               = DOT_SHAPE;
+        cols                   = COLS;
+        rows                   = ROWS;
+        matrix                 = new int[cols][rows];
+        matrixFont             = MatrixFont8x8.INSTANCE;
+        characterWidth         = matrixFont.getCharacterWidth();
+        characterHeight        = matrixFont.getCharacterHeight();
+        characterWidthMinusOne = characterWidth - 1;
         initGraphics();
         registerListeners();
     }
@@ -150,6 +155,15 @@ public class DotMatrix extends Region {
         drawMatrix();
     }
 
+    public MatrixFont getMatrixFont() { return matrixFont; }
+    public void setMatrixFont(final MatrixFont FONT) {
+        matrixFont             = FONT;
+        characterWidth         = matrixFont.getCharacterWidth();
+        characterHeight        = matrixFont.getCharacterHeight();
+        characterWidthMinusOne = characterWidth - 1;
+        drawMatrix();
+    }
+
     public void setPixel(final int X, final int Y, final boolean VALUE) { setPixel(X, Y, VALUE ? dotOnColor : dotOffColor); }
     public void setPixel(final int X, final int Y, final Color COLOR) { setPixel(X, Y, convertToInt(COLOR)); }
     public void setPixel(final int X, final int Y, final int COLOR_VALUE) {
@@ -169,21 +183,10 @@ public class DotMatrix extends Region {
 
     public void setCharAt(final char CHAR, final int X, final int Y) { setCharAt(CHAR, X, Y, dotOnColor); }
     public void setCharAt(final char CHAR, final int X, final int Y, final int COLOR_VALUE) {
-        int[] a = MatrixFont8.getCharacter(CHAR);
-        for (int x = 0; x < 8; x++) {
-            for (int y = 0; y < 8; y++) {
-                setPixel(x + X, y + Y, getBitAt(7 - x, y, a) == 0 ? dotOffColor : COLOR_VALUE);
-            }
-        }
-        drawMatrix();
-    }
-
-    public void setDigitAt(final int DIGIT, final int X, final int Y) { setDigitAt(DIGIT, X, Y, dotOnColor); }
-    public void setDigitAt(final int DIGIT, final int X, final int Y, final int COLOR_VALUE) {
-        int[] a = MatrixFont8.getDigit(DIGIT);
-        for (int x = 0; x < 8; x++) {
-            for (int y = 0; y < 8; y++) {
-                setPixel(x + X, y + Y, getBitAt(7 - x, y, a) == 0 ? dotOffColor : COLOR_VALUE);
+        int[] c = matrixFont.getCharacter(CHAR);
+        for (int x = 0; x < characterWidth; x++) {
+            for (int y = 0; y < characterHeight; y++) {
+                setPixel(x + X, y + Y, getBitAt(characterWidthMinusOne - x, y, c) == 0 ? dotOffColor : COLOR_VALUE);
             }
         }
         drawMatrix();

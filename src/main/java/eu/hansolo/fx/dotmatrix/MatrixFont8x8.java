@@ -19,7 +19,8 @@ package eu.hansolo.fx.dotmatrix;
 /**
  * Created by hansolo on 19.03.17.
  */
-public final class MatrixFont8 {
+public enum MatrixFont8x8 implements MatrixFont {
+    INSTANCE;
 
     public static final int[][] ASCII_32_126 = {
         {
@@ -879,107 +880,12 @@ public final class MatrixFont8 {
             0b00000000
         }};
 
-    public static final int[][] DIGITS = {
-        {
-            0b00010000,
-            0b00110000,
-            0b00010000,
-            0b00010000,
-            0b00010000,
-            0b00010000,
-            0b00010000,
-            0b00111000
-        }, {
-            0b00111000,
-            0b01000100,
-            0b00000100,
-            0b00000100,
-            0b00001000,
-            0b00010000,
-            0b00100000,
-            0b01111100
-        }, {
-            0b00111000,
-            0b01000100,
-            0b00000100,
-            0b00011000,
-            0b00000100,
-            0b00000100,
-            0b01000100,
-            0b00111000
-        }, {
-            0b00000100,
-            0b00001100,
-            0b00010100,
-            0b00100100,
-            0b01000100,
-            0b01111100,
-            0b00000100,
-            0b00000100
-        }, {
-            0b01111100,
-            0b01000000,
-            0b01000000,
-            0b01111000,
-            0b00000100,
-            0b00000100,
-            0b01000100,
-            0b00111000
-        }, {
-            0b00111000,
-            0b01000100,
-            0b01000000,
-            0b01111000,
-            0b01000100,
-            0b01000100,
-            0b01000100,
-            0b00111000
-        }, {
-            0b01111100,
-            0b00000100,
-            0b00000100,
-            0b00001000,
-            0b00010000,
-            0b00100000,
-            0b00100000,
-            0b00100000
-        }, {
-            0b00111000,
-            0b01000100,
-            0b01000100,
-            0b00111000,
-            0b01000100,
-            0b01000100,
-            0b01000100,
-            0b00111000
-        }, {
-            0b00111000,
-            0b01000100,
-            0b01000100,
-            0b01000100,
-            0b00111100,
-            0b00000100,
-            0b01000100,
-            0b00111000
-        }, {
-            0b00111000,
-            0b01000100,
-            0b01000100,
-            0b01000100,
-            0b01000100,
-            0b01000100,
-            0b01000100,
-            0b00111000
-        }};
+    @Override public int getCharacterWidth() { return 8; }
+    @Override public int getCharacterHeight() { return 8; }
 
-    public static final int[] getCharacter(final char CHAR) {
+    @Override public int[] getCharacter(final char CHAR) {
         int ascii = (int) CHAR;
         if (ascii < 32 || ascii > 126) { return ASCII_32_126[0]; }
         return ASCII_32_126[ascii - 32];
-    }
-
-    public static final int[] getDigit(final int DIGIT) {
-        if (DIGIT < 0 || DIGIT > 9) { return ASCII_32_126[0]; }
-        return DIGITS[DIGIT];
     }
 }
