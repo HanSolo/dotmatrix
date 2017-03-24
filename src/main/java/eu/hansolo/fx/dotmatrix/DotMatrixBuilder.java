@@ -16,6 +16,7 @@
 
 package eu.hansolo.fx.dotmatrix;
 
+import eu.hansolo.fx.dotmatrix.DotMatrix.DotShape;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
@@ -58,6 +59,11 @@ public class DotMatrixBuilder<B extends DotMatrixBuilder<B>> {
     }
     public final B dotOffColor(final Color COLOR) {
         properties.put("dotOffColor", new SimpleObjectProperty(COLOR));
+        return (B)this;
+    }
+
+    public final B dotShape(final DotShape SHAPE) {
+        properties.put("dotShape", new SimpleObjectProperty(SHAPE));
         return (B)this;
     }
 
@@ -183,6 +189,8 @@ public class DotMatrixBuilder<B extends DotMatrixBuilder<B>> {
                 CONTROL.setDotOnColor(((ObjectProperty<Color>) properties.get(key)).get());
             } else if("dotOffColor".equals(key)) {
                 CONTROL.setDotOffColor(((ObjectProperty<Color>) properties.get(key)).get());
+            } else if ("dotShape".equals(key)) {
+                CONTROL.setDotShape(((ObjectProperty<DotShape>) properties.get(key)).get());
             }
         }
         return CONTROL;

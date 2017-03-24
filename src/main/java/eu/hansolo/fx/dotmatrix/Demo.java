@@ -16,6 +16,7 @@
 
 package eu.hansolo.fx.dotmatrix;
 
+import eu.hansolo.fx.dotmatrix.DotMatrix.DotShape;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -54,6 +55,7 @@ public class Demo extends Application {
                                             .prefSize(264, 33)
                                             .colsAndRows(128, 16)
                                             .dotOnColor(Color.rgb(255, 55, 0))
+                                            .dotShape(DotShape.ROUND)
                                             .build();
         x                 = matrix.getCols() + 7;
         text              = "follow me on twitter @hansolo_ ";

@@ -17,6 +17,9 @@
 package eu.hansolo.fx.dotmatrix;
 
 import javafx.beans.DefaultProperty;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.IntegerPropertyBase;
+import javafx.beans.property.ObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
@@ -33,43 +36,46 @@ import javafx.scene.paint.Color;
  */
 @DefaultProperty("children")
 public class DotMatrix extends Region {
-    private static final int             RED_MASK        = 255 << 16;
-    private static final int             GREEN_MASK      = 255 << 8;
-    private static final int             BLUE_MASK       = 255;
-    private static final int             ALPHA_MASK      = 255 << 24;
-    private static final double          ALPHA_FACTOR    = 1.0 / 255.0;
-    private              double          preferredWidth;
-    private              double          preferredHeight;
-    private              double          width;
-    private              double          height;
-    private              Canvas          canvas;
-    private              GraphicsContext ctx;
-    private              StackPane       pane;
-    private              int             dotOnColor;
-    private              int             dotOffColor;
-    private              int             cols;
-    private              int             rows;
-    private              int[][]         matrix;
-    private              double          dotSize;
-    private              double          spacer;
-    private              double          dotSizeMinusDoubleSpacer;
+    public  enum DotShape { ROUND, SQUARE }
+    private static final int                      RED_MASK        = 255 << 16;
+    private static final int                      GREEN_MASK      = 255 << 8;
+    private static final int                      BLUE_MASK       = 255;
+    private static final int                      ALPHA_MASK      = 255 << 24;
+    private static final double                   ALPHA_FACTOR    = 1.0 / 255.0;
+    private              double                   preferredWidth;
+    private              double                   preferredHeight;
+    private              double                   width;
+    private              double                   height;
+    private              Canvas                   canvas;
+    private              GraphicsContext          ctx;
+    private              StackPane                pane;
+    private              int                      dotOnColor;
+    private              int                      dotOffColor;
+    private              DotShape                 dotShape;
+    private              int                      cols;
+    private              int                      rows;
+    private              int[][]                  matrix;
+    private              double                   dotSize;
+    private              double                   spacer;
+    private              double                   dotSizeMinusDoubleSpacer;
 
 
     // ******************** Constructors **************************************
     public DotMatrix() {
-        this(250, 250, 32, 32, Color.rgb(255, 55, 0), Color.rgb(51, 51, 51, 0.5));
+        this(250, 250, 32, 32, Color.rgb(255, 55, 0), Color.rgb(51, 51, 51, 0.5), DotShape.ROUND);
     }
     public DotMatrix(final int COLS, final int ROWS) {
-        this(250, 250, COLS, ROWS, Color.rgb(255, 55, 0), Color.rgb(51, 51, 51, 0.5));
+        this(250, 250, COLS, ROWS, Color.rgb(255, 55, 0), Color.rgb(51, 51, 51, 0.5), DotShape.ROUND);
     }
     public DotMatrix(final int COLS, final int ROWS, final Color DOT_ON_COLOR) {
-        this(250, 250, COLS, ROWS, DOT_ON_COLOR, Color.rgb(51, 51, 51, 0.5));
+        this(250, 250, COLS, ROWS, DOT_ON_COLOR, Color.rgb(51, 51, 51, 0.5), DotShape.ROUND);
     }
-    public DotMatrix(final double PREFERRED_WIDTH, final double PREFERRED_HEIGHT, final int COLS, final int ROWS, final Color DOT_ON_COLOR, final Color DOT_OFF_COLOR) {
+    public DotMatrix(final double PREFERRED_WIDTH, final double PREFERRED_HEIGHT, final int COLS, final int ROWS, final Color DOT_ON_COLOR, final Color DOT_OFF_COLOR, final DotShape DOT_SHAPE) {
         preferredWidth  = PREFERRED_WIDTH;
         preferredHeight = PREFERRED_HEIGHT;
         dotOnColor      = convertToInt(DOT_ON_COLOR);
         dotOffColor     = convertToInt(DOT_OFF_COLOR);
+        dotShape        = DOT_SHAPE;
         cols            = COLS;
         rows            = ROWS;
         matrix          = new int[cols][rows];
@@ -135,6 +141,12 @@ public class DotMatrix extends Region {
                 matrix[x][y] = dotOffColor;
             }
         }
+        drawMatrix();
+    }
+
+    public DotShape getDotShape() { return dotShape; }
+    public void setDotShape(final DotShape SHAPE) {
+        dotShape = SHAPE;
         drawMatrix();
     }
 
@@ -208,11 +220,21 @@ public class DotMatrix extends Region {
 
     public void drawMatrix() {
         ctx.clearRect(0, 0, width, height);
-        for (int y = 0; y < rows; y++) {
-            for (int x = 0; x < cols; x++) {
-                ctx.setFill(convertToColor(matrix[x][y]));
-                ctx.fillOval(x * dotSize + spacer, y * dotSize + spacer, dotSizeMinusDoubleSpacer, dotSizeMinusDoubleSpacer);
-                //ctx.fillOval(x * dotSize, y * dotSize, dotSize, dotSize);
+        if (DotShape.ROUND == dotShape) {
+            for (int y = 0; y < rows; y++) {
+                for (int x = 0; x < cols; x++) {
+                    ctx.setFill(convertToColor(matrix[x][y]));
+                    ctx.fillOval(x * dotSize + spacer, y * dotSize + spacer, dotSizeMinusDoubleSpacer, dotSizeMinusDoubleSpacer);
+                    //ctx.fillOval(x * dotSize, y * dotSize, dotSize, dotSize);
+                }
+            }
+        } else {
+            for (int y = 0; y < rows; y++) {
+                for (int x = 0; x < cols; x++) {
+                    ctx.setFill(convertToColor(matrix[x][y]));
+                    ctx.fillRect(x * dotSize + spacer, y * dotSize + spacer, dotSizeMinusDoubleSpacer, dotSizeMinusDoubleSpacer);
+                    //ctx.fillRect(x * dotSize, y * dotSize, dotSize, dotSize);
+                }
             }
         }
     }
