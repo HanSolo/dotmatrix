@@ -181,7 +181,9 @@ public class DotMatrix extends Region {
         drawMatrix();
     }
 
-    public void setCharAt(final char CHAR, final int X, final int Y) { setCharAt(CHAR, X, Y, dotOnColor); }
+    public void setCharAt(final char CHAR, final int X, final int Y) {
+        setCharAt(CHAR, X, Y, dotOnColor);
+    }
     public void setCharAt(final char CHAR, final int X, final int Y, final int COLOR_VALUE) {
         int[] c = matrixFont.getCharacter(CHAR);
         for (int x = 0; x < characterWidth; x++) {
@@ -191,6 +193,22 @@ public class DotMatrix extends Region {
         }
         drawMatrix();
     }
+
+    public void setCharAtWithBackground(final char CHAR, final int X, final int Y) {
+        setCharAtWithBackground(CHAR, X, Y, dotOnColor);
+    }
+    public void setCharAtWithBackground(final char CHAR, final int X, final int Y, final int COLOR_VALUE) {
+        int[] c = matrixFont.getCharacter(CHAR);
+        for (int x = 0; x < characterWidth; x++) {
+            for (int y = 0; y < characterHeight; y++) {
+                if (getBitAt(characterWidthMinusOne - x, y, c) == 0) continue;
+                setPixel(x + X, y + Y, COLOR_VALUE);
+            }
+        }
+        drawMatrix();
+    }
+
+    public double getDotSize() { return dotSize; }
 
     public int getCols() { return cols; }
     public int getRows() { return rows; }
