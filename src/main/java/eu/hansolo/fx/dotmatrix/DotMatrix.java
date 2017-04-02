@@ -239,6 +239,52 @@ public class DotMatrix extends Region {
     private long getBlue(final long COLOR_VALUE) { return (COLOR_VALUE & BLUE_MASK); }
     private long getAlpha(final long COLOR_VALUE) { return (COLOR_VALUE & ALPHA_MASK) >>> 24; }
 
+    public void shiftLeft() {
+        int[] firstColumn = new int[rows];
+        for (int y = 0 ; y < rows ; y++) { firstColumn[y] = matrix[0][y]; }
+        for (int y = 0 ; y < rows ; y++) {
+            for (int x = 1 ; x < cols ; x++) {
+                matrix[x - 1][y] = matrix[x][y];
+            }
+        }
+        for (int y = 0 ; y < rows ; y++) { matrix[cols - 1][y] = firstColumn[y]; }
+        drawMatrix();
+    }
+    public void shiftRight() {
+        int[] lastColumn = new int[rows];
+        for (int y = 0 ; y < rows ; y++) { lastColumn[y] = matrix[cols - 1][y]; }
+        for (int y = 0 ; y < rows ; y++) {
+            for (int x = cols - 2 ; x >= 0 ; x--) {
+                matrix[x + 1][y] = matrix[x][y];
+            }
+        }
+        for (int y = 0 ; y < rows ; y++) { matrix[0][y] = lastColumn[y]; }
+        drawMatrix();
+    }
+
+    public void shiftUp() {
+        int[] firstRow = new int[cols];
+        for (int x = 0 ; x < cols ; x++) { firstRow[x] = matrix[x][0]; }
+        for (int y = 1 ; y < rows ; y++) {
+            for (int x = 0 ; x < cols ; x++) {
+                matrix[x][y - 1] = matrix[x][y];
+            }
+        }
+        for (int x = 0 ; x < cols ; x++) { matrix[x][rows - 1] = firstRow[x]; }
+        drawMatrix();
+    }
+    public void shiftDown() {
+        int[] lastRow = new int[cols];
+        for (int x = 0 ; x < cols ; x++) { lastRow[x] = matrix[x][rows - 1]; }
+        for (int y = rows - 2 ; y >= 0 ; y--) {
+            for (int x = 0 ; x < cols ; x++) {
+                matrix[x][y + 1] = matrix[x][y];
+            }
+        }
+        for (int x = 0 ; x < cols ; x++) { matrix[x][0] = lastRow[x]; }
+        drawMatrix();
+    }
+
     public void drawMatrix() {
         ctx.clearRect(0, 0, width, height);
         if (DotShape.ROUND == dotShape) {
