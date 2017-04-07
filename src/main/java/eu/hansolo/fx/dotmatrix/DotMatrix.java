@@ -290,7 +290,6 @@ public class DotMatrix extends Region {
                 for (int x = 0; x < cols; x++) {
                     ctx.setFill(convertToColor(matrix[x][y]));
                     ctx.fillOval(x * dotSize + spacer, y * dotSize + spacer, dotSizeMinusDoubleSpacer, dotSizeMinusDoubleSpacer);
-                    //ctx.fillOval(x * dotSize, y * dotSize, dotSize, dotSize);
                 }
             }
         } else {
@@ -298,7 +297,6 @@ public class DotMatrix extends Region {
                 for (int x = 0; x < cols; x++) {
                     ctx.setFill(convertToColor(matrix[x][y]));
                     ctx.fillRect(x * dotSize + spacer, y * dotSize + spacer, dotSizeMinusDoubleSpacer, dotSizeMinusDoubleSpacer);
-                    //ctx.fillRect(x * dotSize, y * dotSize, dotSize, dotSize);
                 }
             }
         }
