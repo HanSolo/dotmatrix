@@ -233,13 +233,9 @@ public class DotMatrix extends Region {
     public static int getBitAt(final int X, final int Y, final int[] BYTE_ARRAY) { return (BYTE_ARRAY[Y] >> X) & 1; }
     public static boolean getBitAtBoolean(final int X, final int Y, final int[] BYTE_ARRAY) { return ((BYTE_ARRAY[Y] >> X) & 1) == 1; }
 
-    @Override protected double computePrefWidth(final double HEIGHT) { return super.computePrefWidth(HEIGHT); }
-    @Override protected double computePrefHeight(final double WIDTH) { return super.computePrefHeight(WIDTH); }
+    public int getColorValueAt(final int X, final int Y) { return matrix[X][Y]; }
 
-    private long getRed(final long COLOR_VALUE) { return  (COLOR_VALUE & RED_MASK) >> 16; }
-    private long getGreen(final long COLOR_VALUE) { return  (COLOR_VALUE & GREEN_MASK) >> 8; }
-    private long getBlue(final long COLOR_VALUE) { return (COLOR_VALUE & BLUE_MASK); }
-    private long getAlpha(final long COLOR_VALUE) { return (COLOR_VALUE & ALPHA_MASK) >>> 24; }
+    public Color getColorAt(final int X, final int Y) { return convertToColor(matrix[X][Y]); }
 
     public void shiftLeft() {
         int[] firstColumn = new int[rows];
@@ -307,6 +303,14 @@ public class DotMatrix extends Region {
             }
         }
     }
+
+    @Override protected double computePrefWidth(final double HEIGHT) { return super.computePrefWidth(HEIGHT); }
+    @Override protected double computePrefHeight(final double WIDTH) { return super.computePrefHeight(WIDTH); }
+
+    private long getRed(final long COLOR_VALUE) { return  (COLOR_VALUE & RED_MASK) >> 16; }
+    private long getGreen(final long COLOR_VALUE) { return  (COLOR_VALUE & GREEN_MASK) >> 8; }
+    private long getBlue(final long COLOR_VALUE) { return (COLOR_VALUE & BLUE_MASK); }
+    private long getAlpha(final long COLOR_VALUE) { return (COLOR_VALUE & ALPHA_MASK) >>> 24; }
 
 
     // ******************** Resizing ******************************************
