@@ -213,6 +213,8 @@ public class DotMatrix extends Region {
     public int getCols() { return cols; }
     public int getRows() { return rows; }
 
+    public int[][] getMatrix() { return matrix; }
+
     public static Color convertToColor(final int COLOR_VALUE) {
         return Color.rgb((COLOR_VALUE & RED_MASK) >> 16, (COLOR_VALUE & GREEN_MASK) >> 8, (COLOR_VALUE & BLUE_MASK), ALPHA_FACTOR * ((COLOR_VALUE & ALPHA_MASK) >>> 24));
     }
