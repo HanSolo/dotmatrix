@@ -17,10 +17,12 @@
 package eu.hansolo.fx.dotmatrix;
 
 import eu.hansolo.fx.dotmatrix.DotMatrix.DotShape;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -69,6 +71,11 @@ public class DotMatrixBuilder<B extends DotMatrixBuilder<B>> {
 
     public final B matrixFont(final MatrixFont FONT) {
         properties.put("matrixFont", new SimpleObjectProperty(FONT));
+        return (B)this;
+    }
+
+    public final B useSpacer(final boolean USE) {
+        properties.put("useSpacer", new SimpleBooleanProperty(USE));
         return (B)this;
     }
 
@@ -198,7 +205,9 @@ public class DotMatrixBuilder<B extends DotMatrixBuilder<B>> {
                 CONTROL.setDotShape(((ObjectProperty<DotShape>) properties.get(key)).get());
             } else if ("matrixFont".equals(key)) {
                 CONTROL.setMatrixFont(((ObjectProperty<MatrixFont>) properties.get(key)).get());
-            };
+            } else if ("useSpacer".equals(key)) {
+                CONTROL.setUseSpacer(((BooleanProperty) properties.get(key)).get());
+            }
         }
         return CONTROL;
     }

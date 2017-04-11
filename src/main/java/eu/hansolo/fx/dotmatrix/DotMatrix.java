@@ -58,6 +58,7 @@ public class DotMatrix extends Region {
     private              int                      characterWidthMinusOne;
     private              double                   dotSize;
     private              double                   spacer;
+    private              boolean                  useSpacer;
     private              double                   dotSizeMinusDoubleSpacer;
 
 
@@ -84,6 +85,7 @@ public class DotMatrix extends Region {
         characterWidth         = matrixFont.getCharacterWidth();
         characterHeight        = matrixFont.getCharacterHeight();
         characterWidthMinusOne = characterWidth - 1;
+        useSpacer              = true;
         initGraphics();
         registerListeners();
     }
@@ -161,6 +163,14 @@ public class DotMatrix extends Region {
         characterWidth         = matrixFont.getCharacterWidth();
         characterHeight        = matrixFont.getCharacterHeight();
         characterWidthMinusOne = characterWidth - 1;
+        drawMatrix();
+    }
+
+    public boolean isUsingSpacer() { return useSpacer; }
+    public void setUseSpacer(final boolean USE) {
+        useSpacer = USE;
+        spacer                   = useSpacer ? dotSize * 0.05 : 0;
+        dotSizeMinusDoubleSpacer = dotSize - spacer * 2;
         drawMatrix();
     }
 
@@ -316,8 +326,8 @@ public class DotMatrix extends Region {
         width                    = getWidth() - getInsets().getLeft() - getInsets().getRight();
         height                   = getHeight() - getInsets().getTop() - getInsets().getBottom();
         dotSize                  = (width / cols) < (height / rows) ? (width / cols) : (height / rows);
-        spacer                   = dotSize * 0.05;
-        dotSizeMinusDoubleSpacer = dotSize - dotSize * 0.1;
+        spacer                   = useSpacer ? dotSize * 0.05 : 0;
+        dotSizeMinusDoubleSpacer = dotSize - spacer * 2;
 
         if (width > 0 && height > 0) {
             pane.setMaxSize(width, height);

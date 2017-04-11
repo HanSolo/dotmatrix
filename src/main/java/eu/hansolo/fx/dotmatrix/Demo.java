@@ -54,6 +54,7 @@ public class Demo extends Application {
                                             .dotOnColor(Color.rgb(255, 55, 0))
                                             .dotShape(DotShape.ROUND)
                                             .matrixFont(MatrixFont8x8.INSTANCE)
+                                            .useSpacer(false)
                                             .build();
         x                 = matrix.getCols() + 7;
         text              = "8x8 Font Round Dots (@hansolo_) ";
