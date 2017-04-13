@@ -293,6 +293,23 @@ public class DotMatrix extends Region {
         drawMatrix();
     }
 
+    public void setAllDotsOn() {
+        for (int y = 0; y < rows; y++) {
+            for (int x = 0; x < cols; x++) {
+                setPixel(x, y, true);
+            }
+        }
+        drawMatrix();
+    }
+    public void setAllDotsOff() {
+        for (int y = 0; y < rows; y++) {
+            for (int x = 0; x < cols; x++) {
+                setPixel(x, y, false);
+            }
+        }
+        drawMatrix();
+    }
+
     public void drawMatrix() {
         ctx.clearRect(0, 0, width, height);
         if (DotShape.ROUND == dotShape) {
