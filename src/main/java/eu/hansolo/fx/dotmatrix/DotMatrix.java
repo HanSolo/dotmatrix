@@ -21,9 +21,12 @@ import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+
+import java.util.concurrent.CopyOnWriteArrayList;
 
 
 /**
@@ -33,33 +36,34 @@ import javafx.scene.paint.Color;
  */
 @DefaultProperty("children")
 public class DotMatrix extends Region {
-    public  enum DotShape { ROUND, SQUARE }
-    private static final int                      RED_MASK        = 255 << 16;
-    private static final int                      GREEN_MASK      = 255 << 8;
-    private static final int                      BLUE_MASK       = 255;
-    private static final int                      ALPHA_MASK      = 255 << 24;
-    private static final double                   ALPHA_FACTOR    = 1.0 / 255.0;
-    private              double                   preferredWidth;
-    private              double                   preferredHeight;
-    private              double                   width;
-    private              double                   height;
-    private              Canvas                   canvas;
-    private              GraphicsContext          ctx;
-    private              StackPane                pane;
-    private              int                      dotOnColor;
-    private              int                      dotOffColor;
-    private              DotShape                 dotShape;
-    private              int                      cols;
-    private              int                      rows;
-    private              int[][]                  matrix;
-    private              MatrixFont               matrixFont;
-    private              int                      characterWidth;
-    private              int                      characterHeight;
-    private              int                      characterWidthMinusOne;
-    private              double                   dotSize;
-    private              double                   spacer;
-    private              boolean                  useSpacer;
-    private              double                   dotSizeMinusDoubleSpacer;
+    public  enum DotShape { ROUND, SQUARE, ROUNDED_RECT }
+    private static final int                                          RED_MASK        = 255 << 16;
+    private static final int                                          GREEN_MASK      = 255 << 8;
+    private static final int                                          BLUE_MASK       = 255;
+    private static final int                                          ALPHA_MASK      = 255 << 24;
+    private static final double                                       ALPHA_FACTOR    = 1.0 / 255.0;
+    private              double                                       preferredWidth;
+    private              double                                       preferredHeight;
+    private              double                                       width;
+    private              double                                       height;
+    private              Canvas                                       canvas;
+    private              GraphicsContext                              ctx;
+    private              StackPane                                    pane;
+    private              int                                          dotOnColor;
+    private              int                                          dotOffColor;
+    private              DotShape                                     dotShape;
+    private              int                                          cols;
+    private              int                                          rows;
+    private              int[][]                                      matrix;
+    private              MatrixFont                                   matrixFont;
+    private              int                                          characterWidth;
+    private              int                                          characterHeight;
+    private              int                                          characterWidthMinusOne;
+    private              double                                       dotSize;
+    private              double                                       spacer;
+    private              boolean                                      useSpacer;
+    private              double                                       dotSizeMinusDoubleSpacer;
+    private              CopyOnWriteArrayList<DotMatrixEventListener> listeners;
 
 
     // ******************** Constructors **************************************
@@ -86,6 +90,7 @@ public class DotMatrix extends Region {
         characterHeight        = matrixFont.getCharacterHeight();
         characterWidthMinusOne = characterWidth - 1;
         useSpacer              = true;
+        listeners              = new CopyOnWriteArrayList<>();
         initGraphics();
         registerListeners();
     }
@@ -120,6 +125,7 @@ public class DotMatrix extends Region {
     private void registerListeners() {
         widthProperty().addListener(o -> resize());
         heightProperty().addListener(o -> resize());
+        canvas.setOnMousePressed(e -> checkPixels(e));
     }
 
 
@@ -310,23 +316,54 @@ public class DotMatrix extends Region {
         drawMatrix();
     }
 
+    public static final double clamp(final double MIN, final double MAX, final double VALUE) {
+        if (Double.compare(VALUE, MIN) < 0) return MIN;
+        if (Double.compare(VALUE, MAX) > 0) return MAX;
+        return VALUE;
+    }
+
     public void drawMatrix() {
         ctx.clearRect(0, 0, width, height);
-        if (DotShape.ROUND == dotShape) {
-            for (int y = 0; y < rows; y++) {
-                for (int x = 0; x < cols; x++) {
-                    ctx.setFill(convertToColor(matrix[x][y]));
-                    ctx.fillOval(x * dotSize + spacer, y * dotSize + spacer, dotSizeMinusDoubleSpacer, dotSizeMinusDoubleSpacer);
+        switch(dotShape) {
+            case ROUNDED_RECT:
+                CtxBounds      bounds      = new CtxBounds(dotSizeMinusDoubleSpacer, dotSizeMinusDoubleSpacer);
+                CtxCornerRadii cornerRadii = new CtxCornerRadii(dotSize * 0.125);
+                for (int y = 0; y < rows; y++) {
+                    for (int x = 0; x < cols; x++) {
+                        ctx.setFill(convertToColor(matrix[x][y]));
+                        bounds.setX(x * dotSize + spacer);
+                        bounds.setY(y * dotSize + spacer);
+                        drawRoundedRect(ctx, bounds, cornerRadii);
+                        ctx.fill();
+                    }
                 }
-            }
-        } else {
-            for (int y = 0; y < rows; y++) {
-                for (int x = 0; x < cols; x++) {
-                    ctx.setFill(convertToColor(matrix[x][y]));
-                    ctx.fillRect(x * dotSize + spacer, y * dotSize + spacer, dotSizeMinusDoubleSpacer, dotSizeMinusDoubleSpacer);
+                break;
+            case SQUARE:
+                for (int y = 0; y < rows; y++) {
+                    for (int x = 0; x < cols; x++) {
+                        ctx.setFill(convertToColor(matrix[x][y]));
+                        ctx.fillRect(x * dotSize + spacer, y * dotSize + spacer, dotSizeMinusDoubleSpacer, dotSizeMinusDoubleSpacer);
+                    }
                 }
-            }
+                break;
+            case ROUND:
+            default   :
+                for (int y = 0; y < rows; y++) {
+                    for (int x = 0; x < cols; x++) {
+                        ctx.setFill(convertToColor(matrix[x][y]));
+                        ctx.fillOval(x * dotSize + spacer, y * dotSize + spacer, dotSizeMinusDoubleSpacer, dotSizeMinusDoubleSpacer);
+                    }
+                }
+                break;
         }
+    }
+
+    public void setOnDotMatrixEvent(final DotMatrixEventListener LISTENER) { addDotMatrixEventListener(LISTENER); }
+    public void addDotMatrixEventListener(final DotMatrixEventListener LISTENER) { if (!listeners.contains(LISTENER)) listeners.add(LISTENER); }
+    public void removeDotMatrixEventListener(final DotMatrixEventListener LISTENER) { if (listeners.contains(LISTENER)) listeners.remove(LISTENER); }
+
+    public void fireDotMatrixEvent(final DotMatrixEvent EVENT) {
+        for (DotMatrixEventListener listener : listeners) { listener.onDotMatrixEvent(EVENT); }
     }
 
     @Override protected double computePrefWidth(final double HEIGHT) { return super.computePrefWidth(HEIGHT); }
@@ -336,6 +373,46 @@ public class DotMatrix extends Region {
     private long getGreen(final long COLOR_VALUE) { return  (COLOR_VALUE & GREEN_MASK) >> 8; }
     private long getBlue(final long COLOR_VALUE) { return (COLOR_VALUE & BLUE_MASK); }
     private long getAlpha(final long COLOR_VALUE) { return (COLOR_VALUE & ALPHA_MASK) >>> 24; }
+
+    private void checkPixels(final MouseEvent EVT) {
+        for (int y = 0; y < rows; y++) {
+            for (int x = 0; x < cols; x++) {
+                if (isInRectangle(EVT.getX(), EVT.getY(), x * dotSize + spacer, y * dotSize + spacer, x * dotSize + spacer + dotSizeMinusDoubleSpacer, y * dotSize + spacer + dotSizeMinusDoubleSpacer)) {
+                    fireDotMatrixEvent(new DotMatrixEvent(x, y, EVT.getScreenX(), EVT.getScreenY()));
+                }
+            }
+        }
+    }
+
+    private static void drawRoundedRect(final GraphicsContext CTX, final CtxBounds BOUNDS, final CtxCornerRadii RADII) {
+        double x           = BOUNDS.getX();
+        double y           = BOUNDS.getY();
+        double width       = BOUNDS.getWidth();
+        double height      = BOUNDS.getHeight();
+        double xPlusWidth  = x + width;
+        double yPlusHeight = y + height;
+
+        CTX.beginPath();
+        CTX.moveTo(x + RADII.getUpperRight(), y);
+        CTX.lineTo(xPlusWidth - RADII.getUpperRight(), y);
+        CTX.quadraticCurveTo(xPlusWidth, y, xPlusWidth, y + RADII.getUpperRight());
+        CTX.lineTo(xPlusWidth, yPlusHeight - RADII.getLowerRight());
+        CTX.quadraticCurveTo(xPlusWidth, yPlusHeight, xPlusWidth - RADII.getLowerRight(), yPlusHeight);
+        CTX.lineTo(x + RADII.getLowerLeft(), yPlusHeight);
+        CTX.quadraticCurveTo(x, yPlusHeight, x, yPlusHeight - RADII.getLowerLeft());
+        CTX.lineTo(x, y + RADII.getUpperRight());
+        CTX.quadraticCurveTo(x, y, x + RADII.getUpperRight(), y);
+        CTX.closePath();
+    }
+
+    private static boolean isInRectangle(final double X, final double Y,
+                                         final double MIN_X, final double MIN_Y,
+                                         final double MAX_X, final double MAX_Y) {
+        return (Double.compare(X, MIN_X) >= 0 &&
+                Double.compare(X, MAX_X) <= 0 &&
+                Double.compare(Y, MIN_Y) >= 0 &&
+                Double.compare(Y, MAX_Y) <= 0);
+    }
 
 
     // ******************** Resizing ******************************************
