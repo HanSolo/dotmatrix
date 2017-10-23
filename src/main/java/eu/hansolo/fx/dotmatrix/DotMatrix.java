@@ -379,6 +379,7 @@ public class DotMatrix extends Region {
             for (int x = 0; x < cols; x++) {
                 if (isInRectangle(EVT.getX(), EVT.getY(), x * dotSize + spacer, y * dotSize + spacer, x * dotSize + spacer + dotSizeMinusDoubleSpacer, y * dotSize + spacer + dotSizeMinusDoubleSpacer)) {
                     fireDotMatrixEvent(new DotMatrixEvent(x, y, EVT.getScreenX(), EVT.getScreenY()));
+                    break;
                 }
             }
         }
