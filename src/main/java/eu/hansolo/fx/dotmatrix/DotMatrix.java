@@ -375,9 +375,10 @@ public class DotMatrix extends Region {
     private long getAlpha(final long COLOR_VALUE) { return (COLOR_VALUE & ALPHA_MASK) >>> 24; }
 
     private void checkPixels(final MouseEvent EVT) {
+        double spacerPlusDotSizeMinusDoubleSpacer = spacer + dotSizeMinusDoubleSpacer;
         for (int y = 0; y < rows; y++) {
             for (int x = 0; x < cols; x++) {
-                if (isInRectangle(EVT.getX(), EVT.getY(), x * dotSize + spacer, y * dotSize + spacer, x * dotSize + spacer + dotSizeMinusDoubleSpacer, y * dotSize + spacer + dotSizeMinusDoubleSpacer)) {
+                if (isInRectangle(EVT.getX(), EVT.getY(), x * dotSize + spacer, y * dotSize + spacer, x * dotSize + spacerPlusDotSizeMinusDoubleSpacer, y * dotSize + spacerPlusDotSizeMinusDoubleSpacer)) {
                     fireDotMatrixEvent(new DotMatrixEvent(x, y, EVT.getScreenX(), EVT.getScreenY()));
                     break;
                 }
