@@ -18,6 +18,7 @@ package eu.hansolo.fx.dotmatrix;
 
 import javafx.beans.DefaultProperty;
 import javafx.collections.ObservableList;
+import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -37,11 +38,12 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @DefaultProperty("children")
 public class DotMatrix extends Region {
     public  enum DotShape { ROUND, SQUARE, ROUNDED_RECT }
-    private static final int                                          RED_MASK        = 255 << 16;
-    private static final int                                          GREEN_MASK      = 255 << 8;
-    private static final int                                          BLUE_MASK       = 255;
-    private static final int                                          ALPHA_MASK      = 255 << 24;
-    private static final double                                       ALPHA_FACTOR    = 1.0 / 255.0;
+    public  static final double                                       DEFAULT_SPACER_SIZE_FACTOR = 0.05;
+    private static final int                                          RED_MASK                   = 255 << 16;
+    private static final int                                          GREEN_MASK                 = 255 << 8;
+    private static final int                                          BLUE_MASK                  = 255;
+    private static final int                                          ALPHA_MASK                 = 255 << 24;
+    private static final double                                       ALPHA_FACTOR               = 1.0 / 255.0;
     private              double                                       preferredWidth;
     private              double                                       preferredHeight;
     private              double                                       width;
@@ -62,6 +64,7 @@ public class DotMatrix extends Region {
     private              double                                       dotSize;
     private              double                                       spacer;
     private              boolean                                      useSpacer;
+    private              double                                       spacerSizeFactor;
     private              double                                       dotSizeMinusDoubleSpacer;
     private              CopyOnWriteArrayList<DotMatrixEventListener> listeners;
 
@@ -90,6 +93,7 @@ public class DotMatrix extends Region {
         characterHeight        = matrixFont.getCharacterHeight();
         characterWidthMinusOne = characterWidth - 1;
         useSpacer              = true;
+        spacerSizeFactor       = DEFAULT_SPACER_SIZE_FACTOR;
         listeners              = new CopyOnWriteArrayList<>();
         initGraphics();
         registerListeners();
@@ -125,7 +129,7 @@ public class DotMatrix extends Region {
     private void registerListeners() {
         widthProperty().addListener(o -> resize());
         heightProperty().addListener(o -> resize());
-        canvas.setOnMousePressed(e -> checkPixels(e));
+        canvas.setOnMousePressed(e -> checkForClick(e));
     }
 
 
@@ -175,7 +179,15 @@ public class DotMatrix extends Region {
     public boolean isUsingSpacer() { return useSpacer; }
     public void setUseSpacer(final boolean USE) {
         useSpacer = USE;
-        spacer                   = useSpacer ? dotSize * 0.05 : 0;
+        spacer                   = useSpacer ? dotSize * getSpacerSizeFactor() : 0;
+        dotSizeMinusDoubleSpacer = dotSize - spacer * 2;
+        drawMatrix();
+    }
+
+    public double getSpacerSizeFactor() { return spacerSizeFactor; }
+    public void setSpacerSizeFactor(final double FACTOR) {
+        spacerSizeFactor = clamp(0.0, 0.2, FACTOR);
+        spacer                   = useSpacer ? dotSize * spacerSizeFactor : 0;
         dotSizeMinusDoubleSpacer = dotSize - spacer * 2;
         drawMatrix();
     }
@@ -225,6 +237,13 @@ public class DotMatrix extends Region {
     }
 
     public double getDotSize() { return dotSize; }
+
+    public double getMatrixWidth() { return canvas.getWidth(); }
+    public double getMatrixHeight() { return canvas.getHeight(); }
+
+    public Bounds getMatrixLayoutBounds() { return canvas.getLayoutBounds(); }
+    public Bounds getMatrixBoundsInParent() { return canvas.getBoundsInParent(); }
+    public Bounds getMatrixBoundsInLocal() { return canvas.getBoundsInLocal(); }
 
     public int getCols() { return cols; }
     public int getRows() { return rows; }
@@ -374,7 +393,7 @@ public class DotMatrix extends Region {
     private long getBlue(final long COLOR_VALUE) { return (COLOR_VALUE & BLUE_MASK); }
     private long getAlpha(final long COLOR_VALUE) { return (COLOR_VALUE & ALPHA_MASK) >>> 24; }
 
-    private void checkPixels(final MouseEvent EVT) {
+    private void checkForClick(final MouseEvent EVT) {
         double spacerPlusDotSizeMinusDoubleSpacer = spacer + dotSizeMinusDoubleSpacer;
         for (int y = 0; y < rows; y++) {
             for (int x = 0; x < cols; x++) {
@@ -422,7 +441,7 @@ public class DotMatrix extends Region {
         width                    = getWidth() - getInsets().getLeft() - getInsets().getRight();
         height                   = getHeight() - getInsets().getTop() - getInsets().getBottom();
         dotSize                  = (width / cols) < (height / rows) ? (width / cols) : (height / rows);
-        spacer                   = useSpacer ? dotSize * 0.05 : 0;
+        spacer                   = useSpacer ? dotSize * getSpacerSizeFactor() : 0;
         dotSizeMinusDoubleSpacer = dotSize - spacer * 2;
 
         if (width > 0 && height > 0) {

@@ -79,6 +79,11 @@ public class DotMatrixBuilder<B extends DotMatrixBuilder<B>> {
         return (B)this;
     }
 
+    public final B spacerSizeFactor(final double FACTOR) {
+        properties.put("spacerSizeFactor", new SimpleDoubleProperty(FACTOR));
+        return (B)this;
+    }
+
     public final B prefSize(final double WIDTH, final double HEIGHT) {
         properties.put("prefSize", new SimpleObjectProperty<>(new Dimension2D(WIDTH, HEIGHT)));
         return (B)this;
@@ -207,6 +212,8 @@ public class DotMatrixBuilder<B extends DotMatrixBuilder<B>> {
                 CONTROL.setMatrixFont(((ObjectProperty<MatrixFont>) properties.get(key)).get());
             } else if ("useSpacer".equals(key)) {
                 CONTROL.setUseSpacer(((BooleanProperty) properties.get(key)).get());
+            } else if ("spacerSizeFactor".equals(key)) {
+                CONTROL.setSpacerSizeFactor(((DoubleProperty) properties.get(key)).get());
             }
         }
         return CONTROL;
