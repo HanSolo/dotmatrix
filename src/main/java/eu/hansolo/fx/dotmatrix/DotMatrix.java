@@ -420,10 +420,11 @@ public class DotMatrix extends Region {
     private long getAlpha(final long COLOR_VALUE) { return (COLOR_VALUE & ALPHA_MASK) >>> 24; }
 
     private void checkForClick(final MouseEvent EVT) {
-        double spacerPlusDotSizeMinusDoubleSpacer = spacer + dotSizeMinusDoubleSpacer;
+        double spacerPlusPixelWidthMinusDoubleSpacer  = spacer + dotWidthMinusDoubleSpacer;
+        double spacerPlusPixelHeightMinusDoubleSpacer = spacer + dotHeightMinusDoubleSpacer;
         for (int y = 0; y < rows; y++) {
             for (int x = 0; x < cols; x++) {
-                if (isInRectangle(EVT.getX(), EVT.getY(), x * dotSize + spacer, y * dotSize + spacer, x * dotSize + spacerPlusDotSizeMinusDoubleSpacer, y * dotSize + spacerPlusDotSizeMinusDoubleSpacer)) {
+                if (isInRectangle(EVT.getX(), EVT.getY(), x * dotWidth + spacer, y * dotHeight + spacer, x * dotWidth + spacerPlusPixelWidthMinusDoubleSpacer, y * dotHeight + spacerPlusPixelHeightMinusDoubleSpacer)) {
                     fireDotMatrixEvent(new DotMatrixEvent(x, y, EVT.getScreenX(), EVT.getScreenY()));
                     break;
                 }
