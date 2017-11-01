@@ -363,20 +363,20 @@ public class DotMatrix extends Region {
                     }
                 }
                 break;
-            case SQUARE:
-                for (int y = 0; y < rows; y++) {
-                    for (int x = 0; x < cols; x++) {
-                        ctx.setFill(convertToColor(matrix[x][y]));
-                        ctx.fillRect(x * dotSize + spacer, y * dotSize + spacer, dotSizeMinusDoubleSpacer, dotSizeMinusDoubleSpacer);
-                    }
-                }
-                break;
             case ROUND:
-            default   :
                 for (int y = 0; y < rows; y++) {
                     for (int x = 0; x < cols; x++) {
                         ctx.setFill(convertToColor(matrix[x][y]));
                         ctx.fillOval(x * dotSize + spacer, y * dotSize + spacer, dotSizeMinusDoubleSpacer, dotSizeMinusDoubleSpacer);
+                    }
+                }
+                break;
+            case SQUARE:
+            default    :
+                for (int y = 0; y < rows; y++) {
+                    for (int x = 0; x < cols; x++) {
+                        ctx.setFill(convertToColor(matrix[x][y]));
+                        ctx.fillRect(x * dotSize + spacer, y * dotSize + spacer, dotSizeMinusDoubleSpacer, dotSizeMinusDoubleSpacer);
                     }
                 }
                 break;
