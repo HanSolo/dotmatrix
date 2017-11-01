@@ -64,10 +64,15 @@ public class DotMatrix extends Region {
     private              int                                          characterHeight;
     private              int                                          characterWidthMinusOne;
     private              double                                       dotSize;
+    private              double                                       dotWidth;
+    private              double                                       dotHeight;
     private              double                                       spacer;
     private              boolean                                      useSpacer;
+    private              boolean                                      squareDots;
     private              double                                       spacerSizeFactor;
     private              double                                       dotSizeMinusDoubleSpacer;
+    private              double                                       dotWidthMinusDoubleSpacer;
+    private              double                                       dotHeightMinusDoubleSpacer;
     private              InvalidationListener                         sizeListener;
     private              EventHandler<MouseEvent>                     clickHandler;
     private              CopyOnWriteArrayList<DotMatrixEventListener> listeners;
@@ -97,6 +102,7 @@ public class DotMatrix extends Region {
         characterHeight        = matrixFont.getCharacterHeight();
         characterWidthMinusOne = characterWidth - 1;
         useSpacer              = true;
+        squareDots             = true;
         spacerSizeFactor       = DEFAULT_SPACER_SIZE_FACTOR;
         sizeListener           = o -> resize();
         clickHandler           = e -> checkForClick(e);
@@ -185,9 +191,13 @@ public class DotMatrix extends Region {
     public boolean isUsingSpacer() { return useSpacer; }
     public void setUseSpacer(final boolean USE) {
         useSpacer = USE;
-        spacer                   = useSpacer ? dotSize * getSpacerSizeFactor() : 0;
-        dotSizeMinusDoubleSpacer = dotSize - spacer * 2;
-        drawMatrix();
+        resize();
+    }
+
+    public boolean isSquareDots() { return squareDots; }
+    public void setSquareDots(final boolean SQUARE) {
+        squareDots = SQUARE;
+        resize();
     }
 
     public double getSpacerSizeFactor() { return spacerSizeFactor; }
@@ -243,6 +253,8 @@ public class DotMatrix extends Region {
     }
 
     public double getDotSize() { return dotSize; }
+    public double getDotWidth() { return dotWidth; }
+    public double getDotHeight() { return dotHeight; }
 
     public double getMatrixWidth() { return canvas.getWidth(); }
     public double getMatrixHeight() { return canvas.getHeight(); }
@@ -351,13 +363,13 @@ public class DotMatrix extends Region {
         ctx.clearRect(0, 0, width, height);
         switch(dotShape) {
             case ROUNDED_RECT:
-                CtxBounds      bounds      = new CtxBounds(dotSizeMinusDoubleSpacer, dotSizeMinusDoubleSpacer);
+                CtxBounds      bounds      = new CtxBounds(dotWidthMinusDoubleSpacer, dotHeightMinusDoubleSpacer);
                 CtxCornerRadii cornerRadii = new CtxCornerRadii(dotSize * 0.125);
                 for (int y = 0; y < rows; y++) {
                     for (int x = 0; x < cols; x++) {
                         ctx.setFill(convertToColor(matrix[x][y]));
-                        bounds.setX(x * dotSize + spacer);
-                        bounds.setY(y * dotSize + spacer);
+                        bounds.setX(x * dotWidth + spacer);
+                        bounds.setY(y * dotHeight + spacer);
                         drawRoundedRect(ctx, bounds, cornerRadii);
                         ctx.fill();
                     }
@@ -367,7 +379,7 @@ public class DotMatrix extends Region {
                 for (int y = 0; y < rows; y++) {
                     for (int x = 0; x < cols; x++) {
                         ctx.setFill(convertToColor(matrix[x][y]));
-                        ctx.fillOval(x * dotSize + spacer, y * dotSize + spacer, dotSizeMinusDoubleSpacer, dotSizeMinusDoubleSpacer);
+                        ctx.fillOval(x * dotWidth + spacer, y * dotHeight + spacer, dotWidthMinusDoubleSpacer, dotHeightMinusDoubleSpacer);
                     }
                 }
                 break;
@@ -376,7 +388,7 @@ public class DotMatrix extends Region {
                 for (int y = 0; y < rows; y++) {
                     for (int x = 0; x < cols; x++) {
                         ctx.setFill(convertToColor(matrix[x][y]));
-                        ctx.fillRect(x * dotSize + spacer, y * dotSize + spacer, dotSizeMinusDoubleSpacer, dotSizeMinusDoubleSpacer);
+                        ctx.fillRect(x * dotWidth + spacer, y * dotHeight + spacer, dotWidthMinusDoubleSpacer, dotHeightMinusDoubleSpacer);
                     }
                 }
                 break;
@@ -452,19 +464,29 @@ public class DotMatrix extends Region {
 
     // ******************** Resizing ******************************************
     private void resize() {
-        width                    = getWidth() - getInsets().getLeft() - getInsets().getRight();
-        height                   = getHeight() - getInsets().getTop() - getInsets().getBottom();
-        dotSize                  = (width / cols) < (height / rows) ? (width / cols) : (height / rows);
-        spacer                   = useSpacer ? dotSize * getSpacerSizeFactor() : 0;
-        dotSizeMinusDoubleSpacer = dotSize - spacer * 2;
+        width                      = getWidth() - getInsets().getLeft() - getInsets().getRight();
+        height                     = getHeight() - getInsets().getTop() - getInsets().getBottom();
+        dotSize                    = (width / cols) < (height / rows) ? (width / cols) : (height / rows);
+        dotWidth                   = (width / cols);
+        dotHeight                  = (height / rows);
+        spacer                     = useSpacer ? dotSize * getSpacerSizeFactor() : 0;
+        dotSizeMinusDoubleSpacer   = dotSize - spacer * 2;
+        dotWidthMinusDoubleSpacer  = dotWidth - spacer * 2;
+        dotHeightMinusDoubleSpacer = dotHeight - spacer * 2;
 
         if (width > 0 && height > 0) {
             pane.setMaxSize(width, height);
             pane.setPrefSize(width, height);
             pane.relocate((getWidth() - width) * 0.5, (getHeight() - height) * 0.5);
 
-            canvas.setWidth(cols * dotSize);
-            canvas.setHeight(rows * dotSize);
+            if (squareDots) {
+                dotWidth                   = dotSize;
+                dotHeight                  = dotSize;
+                dotWidthMinusDoubleSpacer  = dotSizeMinusDoubleSpacer;
+                dotHeightMinusDoubleSpacer = dotSizeMinusDoubleSpacer;
+            }
+            canvas.setWidth(cols * dotWidth);
+            canvas.setHeight(rows * dotHeight);
 
             drawMatrix();
         }
