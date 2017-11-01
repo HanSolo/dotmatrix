@@ -17,10 +17,10 @@
 package eu.hansolo.fx.dotmatrix;
 
 public class CtxCornerRadii {
-    private double upperLeft;
-    private double upperRight;
-    private double lowerRight;
-    private double lowerLeft;
+    private double topLeft;
+    private double topRight;
+    private double bottomRight;
+    private double bottomLeft;
 
 
     // ******************** Constructors **************************************
@@ -32,23 +32,23 @@ public class CtxCornerRadii {
     }
     public CtxCornerRadii(final double UPPER_LEFT, final double UPPER_RIGHT,
                           final double LOWER_RIGHT, final double LOWER_LEFT) {
-        upperLeft  = UPPER_LEFT;
-        upperRight = UPPER_RIGHT;
-        lowerRight = LOWER_RIGHT;
-        lowerLeft  = LOWER_LEFT;
+        topLeft = UPPER_LEFT;
+        topRight = UPPER_RIGHT;
+        bottomRight = LOWER_RIGHT;
+        bottomLeft = LOWER_LEFT;
     }
 
 
     // ******************** Methods *******************************************
-    public double getUpperLeft() { return upperLeft; }
-    public void setUpperLeft(final double VALUE) { upperLeft = DotMatrix.clamp(0, Double.MAX_VALUE, VALUE); }
+    public double getTopLeft() { return topLeft; }
+    public void setTopLeft(final double VALUE) { topLeft = DotMatrix.clamp(0, Double.MAX_VALUE, VALUE); }
 
-    public double getUpperRight() { return upperRight; }
-    public void setUpperRight(final double VALUE) { upperRight = DotMatrix.clamp(0, Double.MAX_VALUE, VALUE); }
+    public double getTopRight() { return topRight; }
+    public void setTopRight(final double VALUE) { topRight = DotMatrix.clamp(0, Double.MAX_VALUE, VALUE); }
 
-    public double getLowerRight() { return lowerRight; }
-    public void setLowerRight(final double VALUE) { lowerRight = DotMatrix.clamp(0, Double.MAX_VALUE, VALUE); }
+    public double getBottomRight() { return bottomRight; }
+    public void setBottomRight(final double VALUE) { bottomRight = DotMatrix.clamp(0, Double.MAX_VALUE, VALUE); }
 
-    public double getLowerLeft() { return lowerLeft; }
-    public void setLowerLeft(final double VALUE) { lowerLeft = DotMatrix.clamp(0, Double.MAX_VALUE, VALUE); }
+    public double getBottomLeft() { return bottomLeft; }
+    public void setBottomLeft(final double VALUE) { bottomLeft = DotMatrix.clamp(0, Double.MAX_VALUE, VALUE); }
 }
