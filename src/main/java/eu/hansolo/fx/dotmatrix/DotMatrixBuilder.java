@@ -79,6 +79,11 @@ public class DotMatrixBuilder<B extends DotMatrixBuilder<B>> {
         return (B)this;
     }
 
+    public final B squareDots(final boolean SQUARE) {
+        properties.put("squareDots", new SimpleBooleanProperty(SQUARE));
+        return (B)this;
+    }
+
     public final B spacerSizeFactor(final double FACTOR) {
         properties.put("spacerSizeFactor", new SimpleDoubleProperty(FACTOR));
         return (B)this;
@@ -214,6 +219,8 @@ public class DotMatrixBuilder<B extends DotMatrixBuilder<B>> {
                 CONTROL.setUseSpacer(((BooleanProperty) properties.get(key)).get());
             } else if ("spacerSizeFactor".equals(key)) {
                 CONTROL.setSpacerSizeFactor(((DoubleProperty) properties.get(key)).get());
+            } else if ("squareDots".equals(key)) {
+                CONTROL.setSquareDots(((BooleanProperty) properties.get(key)).get());
             }
         }
         return CONTROL;
