@@ -17,7 +17,9 @@
 package eu.hansolo.fx.dotmatrix;
 
 import javafx.beans.DefaultProperty;
+import javafx.beans.InvalidationListener;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
@@ -66,6 +68,8 @@ public class DotMatrix extends Region {
     private              boolean                                      useSpacer;
     private              double                                       spacerSizeFactor;
     private              double                                       dotSizeMinusDoubleSpacer;
+    private              InvalidationListener                         sizeListener;
+    private              EventHandler<MouseEvent>                     clickHandler;
     private              CopyOnWriteArrayList<DotMatrixEventListener> listeners;
 
 
@@ -94,6 +98,8 @@ public class DotMatrix extends Region {
         characterWidthMinusOne = characterWidth - 1;
         useSpacer              = true;
         spacerSizeFactor       = DEFAULT_SPACER_SIZE_FACTOR;
+        sizeListener           = o -> resize();
+        clickHandler           = e -> checkForClick(e);
         listeners              = new CopyOnWriteArrayList<>();
         initGraphics();
         registerListeners();
@@ -127,9 +133,9 @@ public class DotMatrix extends Region {
     }
 
     private void registerListeners() {
-        widthProperty().addListener(o -> resize());
-        heightProperty().addListener(o -> resize());
-        canvas.setOnMousePressed(e -> checkForClick(e));
+        widthProperty().addListener(sizeListener);
+        heightProperty().addListener(sizeListener);
+        canvas.addEventHandler(MouseEvent.MOUSE_PRESSED, clickHandler);
     }
 
 
@@ -380,6 +386,7 @@ public class DotMatrix extends Region {
     public void setOnDotMatrixEvent(final DotMatrixEventListener LISTENER) { addDotMatrixEventListener(LISTENER); }
     public void addDotMatrixEventListener(final DotMatrixEventListener LISTENER) { if (!listeners.contains(LISTENER)) listeners.add(LISTENER); }
     public void removeDotMatrixEventListener(final DotMatrixEventListener LISTENER) { if (listeners.contains(LISTENER)) listeners.remove(LISTENER); }
+    public void removeAllDotMatrixEventListeners() { listeners.clear(); }
 
     public void fireDotMatrixEvent(final DotMatrixEvent EVENT) {
         for (DotMatrixEventListener listener : listeners) { listener.onDotMatrixEvent(EVENT); }
@@ -387,6 +394,13 @@ public class DotMatrix extends Region {
 
     @Override protected double computePrefWidth(final double HEIGHT) { return super.computePrefWidth(HEIGHT); }
     @Override protected double computePrefHeight(final double WIDTH) { return super.computePrefHeight(WIDTH); }
+
+    public void dispose() {
+        listeners.clear();
+        widthProperty().removeListener(sizeListener);
+        heightProperty().removeListener(sizeListener);
+        canvas.removeEventHandler(MouseEvent.MOUSE_PRESSED, clickHandler);
+    }
 
     private long getRed(final long COLOR_VALUE) { return  (COLOR_VALUE & RED_MASK) >> 16; }
     private long getGreen(final long COLOR_VALUE) { return  (COLOR_VALUE & GREEN_MASK) >> 8; }
