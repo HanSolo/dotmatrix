@@ -19,7 +19,10 @@ package eu.hansolo.fx.dotmatrix;
 import eu.hansolo.fx.dotmatrix.DotMatrix.DotShape;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
@@ -35,8 +38,9 @@ import javafx.scene.Scene;
  * Time: 05:00
  */
 public class Demo extends Application {
-    private static final int            LIME = DotMatrix.convertToInt(Color.LIME);
-    private static final int            RED  = DotMatrix.convertToInt(Color.RED);
+    private static final int            LIME      = DotMatrix.convertToInt(Color.LIME);
+    private static final int            RED       = DotMatrix.convertToInt(Color.RED);
+    private static       int            noOfNodes = 0;
     private              int            x;
     private              DotMatrix      matrix;
     private              String         text;
@@ -103,11 +107,27 @@ public class Demo extends Application {
         stage.setScene(scene);
         stage.show();
 
+        noOfNodes = 0;
+        calcNoOfNodes(matrix);
+        System.out.println(noOfNodes + " Nodes in DotMatrix");
+
         timer.start();
     }
 
     @Override public void stop() {
         System.exit(0);
+    }
+
+
+    // ******************** Misc **********************************************
+    private static void calcNoOfNodes(Node node) {
+        if (node instanceof Parent) {
+            if (((Parent) node).getChildrenUnmodifiable().size() != 0) {
+                ObservableList<Node> tempChildren = ((Parent) node).getChildrenUnmodifiable();
+                noOfNodes += tempChildren.size();
+                for (Node n : tempChildren) { calcNoOfNodes(n); }
+            }
+        }
     }
 
     public static void main(String[] args) {
