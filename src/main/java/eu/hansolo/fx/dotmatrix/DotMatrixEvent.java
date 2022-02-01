@@ -27,11 +27,11 @@ public class DotMatrixEvent {
 
 
     // ******************** Constructors **************************************
-    public DotMatrixEvent(final int X, final int Y, final double MOUSE_X, final double MOUSE_Y) {
-        x      = X;
-        y      = Y;
-        mouseScreenX = MOUSE_X;
-        mouseScreenY = MOUSE_Y;
+    public DotMatrixEvent(final int x, final int y, final double mouseX, final double mouseY) {
+        this.x            = x;
+        this.y            = y;
+        this.mouseScreenX = mouseX;
+        this.mouseScreenY = mouseY;
     }
 
 

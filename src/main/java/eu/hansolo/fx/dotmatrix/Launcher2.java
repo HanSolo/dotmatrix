@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 by Gerrit Grunwald
+ * Copyright (c) 2022 by Gerrit Grunwald
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package eu.hansolo.fx.dotmatrix;
 
-@FunctionalInterface
-public interface DotMatrixEventListener {
-    void onDotMatrixEvent(DotMatrixEvent evt);
+public class Launcher2 {
+    public static void main(String[] args) { Demo2.main(args); }
 }

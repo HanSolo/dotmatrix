@@ -32,15 +32,11 @@ import javafx.scene.paint.Color;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 
-/**
- * User: hansolo
- * Date: 19.03.17
- * Time: 04:39
- */
 @DefaultProperty("children")
 public class DotMatrix extends Region {
-    public  enum DotShape { ROUND, SQUARE, ROUNDED_RECT }
-    public  static final double                                       DEFAULT_SPACER_SIZE_FACTOR = 0.05;
+    public enum DotShape {ROUND, SQUARE, ROUNDED_RECT}
+
+    public static final  double                                       DEFAULT_SPACER_SIZE_FACTOR = 0.05;
     private static final int                                          RED_MASK                   = 255 << 16;
     private static final int                                          GREEN_MASK                 = 255 << 8;
     private static final int                                          BLUE_MASK                  = 255;
@@ -53,8 +49,8 @@ public class DotMatrix extends Region {
     private              Canvas                                       canvas;
     private              GraphicsContext                              ctx;
     private              StackPane                                    pane;
-    private              int                                          dotOnColor;
-    private              int                                          dotOffColor;
+    private              int                                          activeColor;
+    private              int                                          inactiveColor;
     private              DotShape                                     dotShape;
     private              int                                          cols;
     private              int                                          rows;
@@ -82,31 +78,31 @@ public class DotMatrix extends Region {
     public DotMatrix() {
         this(250, 250, 32, 32, Color.rgb(255, 55, 0), Color.rgb(51, 51, 51, 0.5), DotShape.SQUARE, MatrixFont8x8.INSTANCE);
     }
-    public DotMatrix(final int COLS, final int ROWS) {
-        this(250, 250, COLS, ROWS, Color.rgb(255, 55, 0), Color.rgb(51, 51, 51, 0.5), DotShape.SQUARE, MatrixFont8x8.INSTANCE);
+    public DotMatrix(final int cols, final int rows) {
+        this(250, 250, cols, rows, Color.rgb(255, 55, 0), Color.rgb(51, 51, 51, 0.5), DotShape.SQUARE, MatrixFont8x8.INSTANCE);
     }
-    public DotMatrix(final int COLS, final int ROWS, final Color DOT_ON_COLOR) {
-        this(250, 250, COLS, ROWS, DOT_ON_COLOR, Color.rgb(51, 51, 51, 0.5), DotShape.SQUARE, MatrixFont8x8.INSTANCE);
+    public DotMatrix(final int cols, final int rows, final Color dotOnColor) {
+        this(250, 250, cols, rows, dotOnColor, Color.rgb(51, 51, 51, 0.5), DotShape.SQUARE, MatrixFont8x8.INSTANCE);
     }
-    public DotMatrix(final double PREFERRED_WIDTH, final double PREFERRED_HEIGHT, final int COLS, final int ROWS, final Color DOT_ON_COLOR, final Color DOT_OFF_COLOR, final DotShape DOT_SHAPE, final MatrixFont FONT) {
-        preferredWidth         = PREFERRED_WIDTH;
-        preferredHeight        = PREFERRED_HEIGHT;
-        dotOnColor             = convertToInt(DOT_ON_COLOR);
-        dotOffColor            = convertToInt(DOT_OFF_COLOR);
-        dotShape               = DOT_SHAPE;
-        cols                   = COLS;
-        rows                   = ROWS;
-        matrix                 = new int[cols][rows];
-        matrixFont             = FONT;
-        characterWidth         = matrixFont.getCharacterWidth();
-        characterHeight        = matrixFont.getCharacterHeight();
-        characterWidthMinusOne = characterWidth - 1;
-        useSpacer              = true;
-        squareDots             = true;
-        spacerSizeFactor       = DEFAULT_SPACER_SIZE_FACTOR;
-        sizeListener           = o -> resize();
-        clickHandler           = e -> checkForClick(e);
-        listeners              = new CopyOnWriteArrayList<>();
+    public DotMatrix(final double preferredWidth, final double preferredHeight, final int cols, final int rows, final Color dotOnColor, final Color dotOffColor, final DotShape dotShape, final MatrixFont matrixFont) {
+        this.preferredWidth         = preferredWidth;
+        this.preferredHeight        = preferredHeight;
+        this.activeColor            = convertToInt(dotOnColor);
+        this.inactiveColor          = convertToInt(dotOffColor);
+        this.dotShape               = dotShape;
+        this.cols                   = cols;
+        this.rows                   = rows;
+        this.matrixFont             = matrixFont;
+        this.matrix                 = new int[this.cols][this.rows];
+        this.characterWidth         = this.matrixFont.getCharacterWidth();
+        this.characterHeight        = this.matrixFont.getCharacterHeight();
+        this.characterWidthMinusOne = characterWidth - 1;
+        this.useSpacer              = true;
+        this.squareDots             = true;
+        this.spacerSizeFactor       = DEFAULT_SPACER_SIZE_FACTOR;
+        this.sizeListener           = o -> resize();
+        this.clickHandler           = e -> checkForClick(e);
+        this.listeners              = new CopyOnWriteArrayList<>();
         initGraphics();
         registerListeners();
     }
@@ -114,10 +110,10 @@ public class DotMatrix extends Region {
 
     // ******************** Initialization ************************************
     private void initGraphics() {
-        // prefill matrix with dotOffColor
+        // prefill matrix with inactiveColor
         for (int y = 0 ; y < rows ; y++) {
             for (int x = 0 ; x < cols ; x++) {
-                matrix[x][y] = dotOffColor;
+                matrix[x][y] = inactiveColor;
             }
         }
 
@@ -148,105 +144,105 @@ public class DotMatrix extends Region {
     // ******************** Methods *******************************************
     @Override public ObservableList<Node> getChildren() { return super.getChildren(); }
 
-    public void setColsAndRows(final int COLS, final int ROWS) {
-        cols   = COLS;
-        rows   = ROWS;
-        matrix = new int[cols][rows];
+    public void setColsAndRows(final int cols, final int rows) {
+        this.cols = cols;
+        this.rows = rows;
+        matrix    = new int[this.cols][this.rows];
         initGraphics();
         resize();
     }
 
-    public Color getDotOnColor() { return convertToColor(dotOnColor); }
-    public void setDotOnColor(final Color COLOR) {
-        dotOnColor = convertToInt(COLOR);
+    public Color getActiveColor() { return convertToColor(activeColor); }
+    public void setActiveColor(final Color color) {
+        activeColor = convertToInt(color);
         drawMatrix();
     }
 
-    public Color getDotOffColor() { return convertToColor(dotOffColor); }
-    public void setDotOffColor(final Color COLOR) {
-        dotOffColor = convertToInt(COLOR);
+    public Color getInactiveColor() { return convertToColor(inactiveColor); }
+    public void setInactiveColor(final Color color) {
+        inactiveColor = convertToInt(color);
         for (int y = 0 ; y < rows ; y++) {
             for (int x = 0 ; x < cols ; x++) {
-                matrix[x][y] = dotOffColor;
+                matrix[x][y] = inactiveColor;
             }
         }
         drawMatrix();
     }
 
     public DotShape getDotShape() { return dotShape; }
-    public void setDotShape(final DotShape SHAPE) {
-        dotShape = SHAPE;
+    public void setDotShape(final DotShape dotShape) {
+        this.dotShape = dotShape;
         drawMatrix();
     }
 
     public MatrixFont getMatrixFont() { return matrixFont; }
-    public void setMatrixFont(final MatrixFont FONT) {
-        matrixFont             = FONT;
-        characterWidth         = matrixFont.getCharacterWidth();
-        characterHeight        = matrixFont.getCharacterHeight();
-        characterWidthMinusOne = characterWidth - 1;
+    public void setMatrixFont(final MatrixFont matrixFont) {
+        this.matrixFont             = matrixFont;
+        this.characterWidth         = matrixFont.getCharacterWidth();
+        this.characterHeight        = matrixFont.getCharacterHeight();
+        this.characterWidthMinusOne = characterWidth - 1;
         drawMatrix();
     }
 
     public boolean isUsingSpacer() { return useSpacer; }
-    public void setUseSpacer(final boolean USE) {
-        useSpacer = USE;
+    public void setUseSpacer(final boolean useSpacer) {
+        this.useSpacer = useSpacer;
         resize();
     }
 
     public boolean isSquareDots() { return squareDots; }
-    public void setSquareDots(final boolean SQUARE) {
-        squareDots = SQUARE;
+    public void setSquareDots(final boolean squareDots) {
+        this.squareDots = squareDots;
         resize();
     }
 
     public double getSpacerSizeFactor() { return spacerSizeFactor; }
-    public void setSpacerSizeFactor(final double FACTOR) {
-        spacerSizeFactor = clamp(0.0, 0.2, FACTOR);
-        spacer                   = useSpacer ? dotSize * spacerSizeFactor : 0;
-        dotSizeMinusDoubleSpacer = dotSize - spacer * 2;
+    public void setSpacerSizeFactor(final double spacerSizeFactor) {
+        this.spacerSizeFactor         = clamp(0.0, 0.2, spacerSizeFactor);
+        this.spacer                   = useSpacer ? dotSize * spacerSizeFactor : 0;
+        this.dotSizeMinusDoubleSpacer = dotSize - spacer * 2;
         drawMatrix();
     }
 
-    public void setPixel(final int X, final int Y, final boolean VALUE) { setPixel(X, Y, VALUE ? dotOnColor : dotOffColor); }
-    public void setPixel(final int X, final int Y, final Color COLOR) { setPixel(X, Y, convertToInt(COLOR)); }
-    public void setPixel(final int X, final int Y, final int COLOR_VALUE) {
-        if (X >= cols || X < 0) return;
-        if (Y >= rows || Y < 0) return;
-        matrix[X][Y] = COLOR_VALUE;
+    public void setPixel(final int posX, final int posY, final boolean value) { setPixel(posX, posY, value ? activeColor : inactiveColor); }
+    public void setPixel(final int posX, final int posY, final Color color) { setPixel(posX, posY, convertToInt(color)); }
+    public void setPixel(final int posX, final int posY, final int colorValue) {
+        if (posX >= cols || posX < 0) { return; }
+        if (posY >= rows || posY < 0) { return; }
+        matrix[posX][posY] = colorValue;
     }
 
-    public void setPixelWithRedraw(final int X, final int Y, final boolean ON) {
-        setPixel(X, Y, ON ? dotOnColor : dotOffColor);
+    public void setPixelWithRedraw(final int posX, final int posY, final boolean on) {
+        setPixel(posX, posY, on ? activeColor : inactiveColor);
         drawMatrix();
     }
-    public void setPixelWithRedraw(final int X, final int Y, final int COLOR_VALUE) {
-        setPixel(X, Y, COLOR_VALUE);
+    public void setPixelWithRedraw(final int posX, final int posY, final int colorValue) {
+        setPixel(posX, posY, colorValue);
         drawMatrix();
     }
 
-    public void setCharAt(final char CHAR, final int X, final int Y) {
-        setCharAt(CHAR, X, Y, dotOnColor);
+    public void setCharAt(final char character, final int posX, final int posY) {
+        setCharAt(character, posX, posY, activeColor);
     }
-    public void setCharAt(final char CHAR, final int X, final int Y, final int COLOR_VALUE) {
-        int[] c = matrixFont.getCharacter(CHAR);
+    public void setCharAt(final char character, final int posX, final int posY, final int COLOR_VALUE) {
+        int[] c = matrixFont.getCharacter(character);
         for (int x = 0; x < characterWidth; x++) {
             for (int y = 0; y < characterHeight; y++) {
-                setPixel(x + X, y + Y, getBitAt(characterWidthMinusOne - x, y, c) == 0 ? dotOffColor : COLOR_VALUE);
+                setPixel(x + posX, y + posY, getBitAt(characterWidthMinusOne - x, y, c) == 0 ? inactiveColor : COLOR_VALUE);
             }
         }
         drawMatrix();
     }
 
-    public void setCharAtWithBackground(final char CHAR, final int X, final int Y) {
-        setCharAtWithBackground(CHAR, X, Y, dotOnColor);
+    public void setCharAtWithBackground(final char character, final int posX, final int posY) {
+        setCharAtWithBackground(character, posX, posY, activeColor);
     }
-    public void setCharAtWithBackground(final char CHAR, final int X, final int Y, final int COLOR_VALUE) {
-        int[] c = matrixFont.getCharacter(CHAR);
+    public void setCharAtWithBackground(final char character, final int posX, final int posY, final int colorValue) {
+        int[] c = matrixFont.getCharacter(character);
         for (int x = 0; x < characterWidth; x++) {
             for (int y = 0; y < characterHeight; y++) {
                 if (getBitAt(characterWidthMinusOne - x, y, c) == 0) continue;
-                setPixel(x + X, y + Y, COLOR_VALUE);
+                setPixel(x + posX, y + posY, colorValue);
             }
         }
         drawMatrix();
@@ -268,27 +264,27 @@ public class DotMatrix extends Region {
 
     public int[][] getMatrix() { return matrix; }
 
-    public static Color convertToColor(final int COLOR_VALUE) {
-        return Color.rgb((COLOR_VALUE & RED_MASK) >> 16, (COLOR_VALUE & GREEN_MASK) >> 8, (COLOR_VALUE & BLUE_MASK), ALPHA_FACTOR * ((COLOR_VALUE & ALPHA_MASK) >>> 24));
+    public static Color convertToColor(final int colorValue) {
+        return Color.rgb((colorValue & RED_MASK) >> 16, (colorValue & GREEN_MASK) >> 8, (colorValue & BLUE_MASK), ALPHA_FACTOR * ((colorValue & ALPHA_MASK) >>> 24));
     }
 
-    public static int convertToInt(final Color COLOR) {
-        return convertToInt((float) COLOR.getRed(), (float) COLOR.getGreen(), (float) COLOR.getBlue(), (float) COLOR.getOpacity());
+    public static int convertToInt(final Color color) {
+        return convertToInt((float) color.getRed(), (float) color.getGreen(), (float) color.getBlue(), (float) color.getOpacity());
     }
-    public static int convertToInt(final float RED, final float GREEN, final float BLUE, final float ALPHA) {
-        int red   = Math.round(255 * RED);
-        int green = Math.round(255 * GREEN);
-        int blue  = Math.round(255 * BLUE);
-        int alpha = Math.round(255 * ALPHA);
-        return (alpha << 24) | (red << 16) | (green << 8) | blue;
+    public static int convertToInt(final float red, final float green, final float blue, final float alpha) {
+        int r = Math.round(255 * red);
+        int g = Math.round(255 * green);
+        int b = Math.round(255 * blue);
+        int a = Math.round(255 * alpha);
+        return (a << 24) | (r << 16) | (g << 8) | b;
     }
 
-    public static int getBitAt(final int X, final int Y, final int[] BYTE_ARRAY) { return (BYTE_ARRAY[Y] >> X) & 1; }
-    public static boolean getBitAtBoolean(final int X, final int Y, final int[] BYTE_ARRAY) { return ((BYTE_ARRAY[Y] >> X) & 1) == 1; }
+    public static int getBitAt(final int posX, final int posY, final int[] byteArray) { return (byteArray[posY] >> posX) & 1; }
+    public static boolean getBitAtBoolean(final int posX, final int posY, final int[] byteArray) { return ((byteArray[posY] >> posX) & 1) == 1; }
 
-    public int getColorValueAt(final int X, final int Y) { return matrix[X][Y]; }
+    public int getColorValueAt(final int posX, final int posY) { return matrix[posX][posY]; }
 
-    public Color getColorAt(final int X, final int Y) { return convertToColor(matrix[X][Y]); }
+    public Color getColorAt(final int posX, final int posY) { return convertToColor(matrix[posX][posY]); }
 
     public void shiftLeft() {
         int[] firstColumn = new int[rows];
@@ -353,10 +349,10 @@ public class DotMatrix extends Region {
         drawMatrix();
     }
 
-    public static final double clamp(final double MIN, final double MAX, final double VALUE) {
-        if (Double.compare(VALUE, MIN) < 0) return MIN;
-        if (Double.compare(VALUE, MAX) > 0) return MAX;
-        return VALUE;
+    public static final double clamp(final double min, final double max, final double value) {
+        if (Double.compare(value, min) < 0) return min;
+        if (Double.compare(value, max) > 0) return max;
+        return value;
     }
 
     public void drawMatrix() {
@@ -395,17 +391,17 @@ public class DotMatrix extends Region {
         }
     }
 
-    public void setOnDotMatrixEvent(final DotMatrixEventListener LISTENER) { addDotMatrixEventListener(LISTENER); }
-    public void addDotMatrixEventListener(final DotMatrixEventListener LISTENER) { if (!listeners.contains(LISTENER)) listeners.add(LISTENER); }
-    public void removeDotMatrixEventListener(final DotMatrixEventListener LISTENER) { if (listeners.contains(LISTENER)) listeners.remove(LISTENER); }
+    public void setOnDotMatrixEvent(final DotMatrixEventListener listener) { addDotMatrixEventListener(listener); }
+    public void addDotMatrixEventListener(final DotMatrixEventListener listener) { if (!listeners.contains(listener)) listeners.add(listener); }
+    public void removeDotMatrixEventListener(final DotMatrixEventListener listener) { if (listeners.contains(listener)) listeners.remove(listener); }
     public void removeAllDotMatrixEventListeners() { listeners.clear(); }
 
-    public void fireDotMatrixEvent(final DotMatrixEvent EVENT) {
-        for (DotMatrixEventListener listener : listeners) { listener.onDotMatrixEvent(EVENT); }
+    public void fireDotMatrixEvent(final DotMatrixEvent evt) {
+        for (DotMatrixEventListener listener : listeners) { listener.onDotMatrixEvent(evt); }
     }
 
-    @Override protected double computePrefWidth(final double HEIGHT) { return super.computePrefWidth(HEIGHT); }
-    @Override protected double computePrefHeight(final double WIDTH) { return super.computePrefHeight(WIDTH); }
+    @Override protected double computePrefWidth(final double height) { return super.computePrefWidth(height); }
+    @Override protected double computePrefHeight(final double width) { return super.computePrefHeight(width); }
 
     public void dispose() {
         listeners.clear();
@@ -414,52 +410,52 @@ public class DotMatrix extends Region {
         canvas.removeEventHandler(MouseEvent.MOUSE_PRESSED, clickHandler);
     }
 
-    private long getRed(final long COLOR_VALUE) { return  (COLOR_VALUE & RED_MASK) >> 16; }
-    private long getGreen(final long COLOR_VALUE) { return  (COLOR_VALUE & GREEN_MASK) >> 8; }
-    private long getBlue(final long COLOR_VALUE) { return (COLOR_VALUE & BLUE_MASK); }
-    private long getAlpha(final long COLOR_VALUE) { return (COLOR_VALUE & ALPHA_MASK) >>> 24; }
+    private long getRed(final long colorValue) { return  (colorValue & RED_MASK) >> 16; }
+    private long getGreen(final long colorValue) { return  (colorValue & GREEN_MASK) >> 8; }
+    private long getBlue(final long colorValue) { return (colorValue & BLUE_MASK); }
+    private long getAlpha(final long colorValue) { return (colorValue & ALPHA_MASK) >>> 24; }
 
-    private void checkForClick(final MouseEvent EVT) {
+    private void checkForClick(final MouseEvent evt) {
         double spacerPlusPixelWidthMinusDoubleSpacer  = spacer + dotWidthMinusDoubleSpacer;
         double spacerPlusPixelHeightMinusDoubleSpacer = spacer + dotHeightMinusDoubleSpacer;
         for (int y = 0; y < rows; y++) {
             for (int x = 0; x < cols; x++) {
-                if (isInRectangle(EVT.getX(), EVT.getY(), x * dotWidth + spacer, y * dotHeight + spacer, x * dotWidth + spacerPlusPixelWidthMinusDoubleSpacer, y * dotHeight + spacerPlusPixelHeightMinusDoubleSpacer)) {
-                    fireDotMatrixEvent(new DotMatrixEvent(x, y, EVT.getScreenX(), EVT.getScreenY()));
+                if (isInRectangle(evt.getX(), evt.getY(), x * dotWidth + spacer, y * dotHeight + spacer, x * dotWidth + spacerPlusPixelWidthMinusDoubleSpacer, y * dotHeight + spacerPlusPixelHeightMinusDoubleSpacer)) {
+                    fireDotMatrixEvent(new DotMatrixEvent(x, y, evt.getScreenX(), evt.getScreenY()));
                     break;
                 }
             }
         }
     }
 
-    private static void drawRoundedRect(final GraphicsContext CTX, final CtxBounds BOUNDS, final CtxCornerRadii RADII) {
-        double x           = BOUNDS.getX();
-        double y           = BOUNDS.getY();
-        double width       = BOUNDS.getWidth();
-        double height      = BOUNDS.getHeight();
+    private static void drawRoundedRect(final GraphicsContext ctx, final CtxBounds bounds, final CtxCornerRadii radii) {
+        double x           = bounds.getX();
+        double y           = bounds.getY();
+        double width       = bounds.getWidth();
+        double height      = bounds.getHeight();
         double xPlusWidth  = x + width;
         double yPlusHeight = y + height;
 
-        CTX.beginPath();
-        CTX.moveTo(x + RADII.getTopRight(), y);
-        CTX.lineTo(xPlusWidth - RADII.getTopRight(), y);
-        CTX.quadraticCurveTo(xPlusWidth, y, xPlusWidth, y + RADII.getTopRight());
-        CTX.lineTo(xPlusWidth, yPlusHeight - RADII.getBottomRight());
-        CTX.quadraticCurveTo(xPlusWidth, yPlusHeight, xPlusWidth - RADII.getBottomRight(), yPlusHeight);
-        CTX.lineTo(x + RADII.getBottomLeft(), yPlusHeight);
-        CTX.quadraticCurveTo(x, yPlusHeight, x, yPlusHeight - RADII.getBottomLeft());
-        CTX.lineTo(x, y + RADII.getTopRight());
-        CTX.quadraticCurveTo(x, y, x + RADII.getTopRight(), y);
-        CTX.closePath();
+        ctx.beginPath();
+        ctx.moveTo(x + radii.getTopRight(), y);
+        ctx.lineTo(xPlusWidth - radii.getTopRight(), y);
+        ctx.quadraticCurveTo(xPlusWidth, y, xPlusWidth, y + radii.getTopRight());
+        ctx.lineTo(xPlusWidth, yPlusHeight - radii.getBottomRight());
+        ctx.quadraticCurveTo(xPlusWidth, yPlusHeight, xPlusWidth - radii.getBottomRight(), yPlusHeight);
+        ctx.lineTo(x + radii.getBottomLeft(), yPlusHeight);
+        ctx.quadraticCurveTo(x, yPlusHeight, x, yPlusHeight - radii.getBottomLeft());
+        ctx.lineTo(x, y + radii.getTopRight());
+        ctx.quadraticCurveTo(x, y, x + radii.getTopRight(), y);
+        ctx.closePath();
     }
 
-    private static boolean isInRectangle(final double X, final double Y,
-                                         final double MIN_X, final double MIN_Y,
-                                         final double MAX_X, final double MAX_Y) {
-        return (Double.compare(X, MIN_X) >= 0 &&
-                Double.compare(X, MAX_X) <= 0 &&
-                Double.compare(Y, MIN_Y) >= 0 &&
-                Double.compare(Y, MAX_Y) <= 0);
+    private static boolean isInRectangle(final double x, final double y,
+                                         final double minX, final double minY,
+                                         final double maxX, final double maxY) {
+        return (Double.compare(x, minX) >= 0 &&
+                Double.compare(x, maxX) <= 0 &&
+                Double.compare(y, minY) >= 0 &&
+                Double.compare(y, maxY) <= 0);
     }
 
 

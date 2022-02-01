@@ -883,8 +883,8 @@ public enum MatrixFont8x8 implements MatrixFont {
     @Override public int getCharacterWidth() { return 8; }
     @Override public int getCharacterHeight() { return 8; }
 
-    @Override public int[] getCharacter(final char CHAR) {
-        int ascii = (int) CHAR;
+    @Override public int[] getCharacter(final char character) {
+        int ascii = (int) character;
         if (ascii < 32 || ascii > 126) { return ASCII_32_126[0]; }
         return ASCII_32_126[ascii - 32];
     }

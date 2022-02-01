@@ -1,19 +1,187 @@
-group 'eu.hansolo.fx'
+import java.text.SimpleDateFormat
 
-apply plugin: 'java'
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Copyright 2020-2021 Gerrit Grunwald.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+// Monitor main build file
+plugins {
+    id 'idea'
+    id 'java-library'
+    id 'maven-publish'
+    id 'signing'
+    id 'com.google.osdetector'           version '1.7.0'
+    id 'org.javamodularity.moduleplugin' version '1.8.8'
+    id 'org.beryx.jlink'                 version '2.24.2'
+    id 'net.nemerosa.versioning'         version '2.14.0'
+    id 'biz.aQute.bnd.builder'           version '5.3.0'
+}
 
-sourceCompatibility = 1.8
+apply plugin: 'biz.aQute.bnd.builder'
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
+
+description   = 'DotMatrix is a multipurpose JavaFX control that can display all kinds of matrices'
+mainClassName = "$moduleName/eu.hansolo.fx.dotmatrix.Launcher1"
+
+Date buildTimeAndDate = new Date()
+ext {
+    buildDate       = new SimpleDateFormat('yyyy-MM-dd').format(buildTimeAndDate)
+    buildTime       = new SimpleDateFormat('HH:mm:ss.SSSZ').format(buildTimeAndDate)
+    platform        = osdetector.os == 'osx' ? osdetector.arch == 'aarch_64' ? 'mac-aarch64' : 'mac' : osdetector.os == 'windows' ? 'win' : osdetector.os == 'linux' ? osdetector.arch == 'aarch_64' ? 'linux-aarch64' : 'linux' : osdetector.os
+    ciOssrhUsername = System.getenv('OSSRH_USERNAME')
+    ciOssrhPassword = System.getenv('OSSRH_PASSWORD')
+    ciGHUser        = System.getenv('GH_USER')
+    ciGHToken       = System.getenv('GH_TOKEN')
+    gpgkey          = System.getenv("GPG_PRIVATE_KEY")
+    gpgpassphrase   = System.getenv("PASSPHRASE")
+}
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-
+    implementation "org.openjfx:javafx-base:${javafxVersion}:${platform}"
+    implementation "org.openjfx:javafx-graphics:${javafxVersion}:${platform}"
+    implementation "org.openjfx:javafx-controls:${javafxVersion}:${platform}"
 }
 
-// start the demo from gradle
-task Demo(type: JavaExec) {
-    main = "eu.hansolo.fx.dotmatrix.Demo"
+jar {
+    manifest {
+        attributes(
+                'Built-By'              : System.properties['user.name'],
+                'Created-By'            : System.properties['java.version'] + " (" + System.properties['java.vendor'] + " " + System.properties['java.vm.version'] + ")",
+                'Build-Date'            : project.buildDate,
+                'Build-Time'            : project.buildTime,
+                'Build-Revision'        : versioning.info.commit,
+                'Specification-Title'   : project.name,
+                'Specification-Version' : project.version,
+                'Implementation-Title'  : project.name,
+                'Implementation-Version': project.version,
+                'Bundle-Name'           : project.name,
+                'Bundle-License'        : 'https://www.apache.org/licenses/LICENSE-2.0;description=Apache License Version 2.0;link=https://spdx.org/licenses/Apache-2.0.html',
+                'Bundle-Description'    : description,
+                'Bundle-SymbolicName'   : 'eu.hansolo.fx.dotmatrix',
+                'Export-Package'        : 'eu.hansolo.fx.dotmatrix'
+        )
+    }
+}
+
+// create one jar for the javadoc
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    archiveClassifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+// create one jar for the source files
+task sourcesJar(type: Jar, dependsOn: classes) {
+    archiveClassifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+
+artifacts {
+    archives jar
+    archives javadocJar
+    archives sourcesJar
+}
+
+signing {
+    if (gpgkey && gpgpassphrase) {
+        useInMemoryPgpKeys(gpgkey, gpgpassphrase)
+    }
+
+    sign configurations.archives
+    sign publishing.publications
+}
+
+publishing {
+    publications {
+        mavenCustom(MavenPublication) {
+            group = 'eu.hansolo.fx'
+            artifactId = 'dotmatrix'
+            version = "${version}"
+
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+
+            pom.withXml {
+                asNode().dependencies.'*'.findAll {
+                    it.groupId.text() == 'org.openjfx'
+                }.each {
+                    it.remove(it.classifier)
+                }
+            }
+
+            pom {
+                name = 'dotmatrix'
+                description = 'DotMatrix is a multipurpose JavaFX control that can display all kinds of matrices'
+                url = "https://github.com/HanSolo/dotmatrix/wiki"
+                licenses {
+                    license {
+                        name = "The Apache License, Version 2.0"
+                        url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                    }
+                }
+                developers {
+                    developer {
+                        id = "HanSolo"
+                        name = "Gerrit Grunwald"
+                        email = "han.solo@mac.com"
+                    }
+                }
+                scm {
+                    connection = "scm:git:https://HanSolo/dotmatrix"
+                    developerConnection = "scm:git:https://HanSolo/dotmatrix"
+                    url = "https://github.com/HanSolo/dotmatrix"
+                }
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            name = "OSSRH"
+            url = 'https://oss.sonatype.org/service/local/staging/deploy/maven2'
+            credentials {
+                username = null == ciOssrhUsername ? ossrhUsername : ciOssrhUsername
+                password = null == ciOssrhPassword ? ossrhPassword : ciOssrhPassword
+            }
+        }
+        maven {
+            name = "GitHubPackages"
+            url = "https://maven.pkg.github.com/HanSolo/dotmatrix"
+            credentials {
+                username = null == ciGHUser  ? ghUser  : ciGHUser
+                password = null == ciGHToken ? ghToken : ciGHToken
+            }
+        }
+    }
+}
+
+// start the demo1 from gradle
+task Demo1(type: JavaExec) {
+    main = "eu.hansolo.fx.dotmatrix.Launcher1"
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+// start the demo2 from gradle
+task Demo2(type: JavaExec) {
+    main = "eu.hansolo.fx.dotmatrix.Launcher2"
     classpath = sourceSets.main.runtimeClasspath
 }

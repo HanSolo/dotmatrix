@@ -33,9 +33,6 @@ import javafx.scene.paint.Color;
 import java.util.HashMap;
 
 
-/**
- * Created by hansolo on 20.03.17.
- */
 public class DotMatrixBuilder<B extends DotMatrixBuilder<B>> {
     private HashMap<String, Property> properties = new HashMap<>();
 
@@ -49,180 +46,180 @@ public class DotMatrixBuilder<B extends DotMatrixBuilder<B>> {
         return new DotMatrixBuilder();
     }
     
-    public final B colsAndRows(final int COLS, final int ROWS) {
-        properties.put("cols", new SimpleIntegerProperty(COLS));
-        properties.put("rows", new SimpleIntegerProperty(ROWS));
+    public final B colsAndRows(final int cols, final int rows) {
+        properties.put("cols", new SimpleIntegerProperty(cols));
+        properties.put("rows", new SimpleIntegerProperty(rows));
         return (B)this;
     }
 
-    public final B dotOnColor(final Color COLOR) {
-        properties.put("dotOnColor", new SimpleObjectProperty(COLOR));
+    public final B activeColor(final Color color) {
+        properties.put("activeColor", new SimpleObjectProperty(color));
         return (B)this;
     }
-    public final B dotOffColor(final Color COLOR) {
-        properties.put("dotOffColor", new SimpleObjectProperty(COLOR));
-        return (B)this;
-    }
-
-    public final B dotShape(final DotShape SHAPE) {
-        properties.put("dotShape", new SimpleObjectProperty(SHAPE));
+    public final B inactiveColor(final Color color) {
+        properties.put("inactiveColor", new SimpleObjectProperty(color));
         return (B)this;
     }
 
-    public final B matrixFont(final MatrixFont FONT) {
-        properties.put("matrixFont", new SimpleObjectProperty(FONT));
+    public final B dotShape(final DotShape shape) {
+        properties.put("dotShape", new SimpleObjectProperty(shape));
         return (B)this;
     }
 
-    public final B useSpacer(final boolean USE) {
-        properties.put("useSpacer", new SimpleBooleanProperty(USE));
+    public final B matrixFont(final MatrixFont font) {
+        properties.put("matrixFont", new SimpleObjectProperty(font));
         return (B)this;
     }
 
-    public final B squareDots(final boolean SQUARE) {
-        properties.put("squareDots", new SimpleBooleanProperty(SQUARE));
+    public final B useSpacer(final boolean useSpacer) {
+        properties.put("useSpacer", new SimpleBooleanProperty(useSpacer));
         return (B)this;
     }
 
-    public final B spacerSizeFactor(final double FACTOR) {
-        properties.put("spacerSizeFactor", new SimpleDoubleProperty(FACTOR));
+    public final B squareDots(final boolean squareDots) {
+        properties.put("squareDots", new SimpleBooleanProperty(squareDots));
         return (B)this;
     }
 
-    public final B prefSize(final double WIDTH, final double HEIGHT) {
-        properties.put("prefSize", new SimpleObjectProperty<>(new Dimension2D(WIDTH, HEIGHT)));
-        return (B)this;
-    }
-    public final B minSize(final double WIDTH, final double HEIGHT) {
-        properties.put("minSize", new SimpleObjectProperty<>(new Dimension2D(WIDTH, HEIGHT)));
-        return (B)this;
-    }
-    public final B maxSize(final double WIDTH, final double HEIGHT) {
-        properties.put("maxSize", new SimpleObjectProperty<>(new Dimension2D(WIDTH, HEIGHT)));
+    public final B spacerSizeFactor(final double spacerSizeFactor) {
+        properties.put("spacerSizeFactor", new SimpleDoubleProperty(spacerSizeFactor));
         return (B)this;
     }
 
-    public final B prefWidth(final double PREF_WIDTH) {
-        properties.put("prefWidth", new SimpleDoubleProperty(PREF_WIDTH));
+    public final B prefSize(final double width, final double height) {
+        properties.put("prefSize", new SimpleObjectProperty<>(new Dimension2D(width, height)));
         return (B)this;
     }
-    public final B prefHeight(final double PREF_HEIGHT) {
-        properties.put("prefHeight", new SimpleDoubleProperty(PREF_HEIGHT));
+    public final B minSize(final double width, final double height) {
+        properties.put("minSize", new SimpleObjectProperty<>(new Dimension2D(width, height)));
         return (B)this;
     }
-
-    public final B minWidth(final double MIN_WIDTH) {
-        properties.put("minWidth", new SimpleDoubleProperty(MIN_WIDTH));
-        return (B)this;
-    }
-    public final B minHeight(final double MIN_HEIGHT) {
-        properties.put("minHeight", new SimpleDoubleProperty(MIN_HEIGHT));
+    public final B maxSize(final double width, final double height) {
+        properties.put("maxSize", new SimpleObjectProperty<>(new Dimension2D(width, height)));
         return (B)this;
     }
 
-    public final B maxWidth(final double MAX_WIDTH) {
-        properties.put("maxWidth", new SimpleDoubleProperty(MAX_WIDTH));
+    public final B prefWidth(final double prefWidth) {
+        properties.put("prefWidth", new SimpleDoubleProperty(prefWidth));
         return (B)this;
     }
-    public final B maxHeight(final double MAX_HEIGHT) {
-        properties.put("maxHeight", new SimpleDoubleProperty(MAX_HEIGHT));
-        return (B)this;
-    }
-
-    public final B scaleX(final double SCALE_X) {
-        properties.put("scaleX", new SimpleDoubleProperty(SCALE_X));
-        return (B)this;
-    }
-    public final B scaleY(final double SCALE_Y) {
-        properties.put("scaleY", new SimpleDoubleProperty(SCALE_Y));
+    public final B prefHeight(final double prefHeight) {
+        properties.put("prefHeight", new SimpleDoubleProperty(prefHeight));
         return (B)this;
     }
 
-    public final B layoutX(final double LAYOUT_X) {
-        properties.put("layoutX", new SimpleDoubleProperty(LAYOUT_X));
+    public final B minWidth(final double minWidth) {
+        properties.put("minWidth", new SimpleDoubleProperty(minWidth));
         return (B)this;
     }
-    public final B layoutY(final double LAYOUT_Y) {
-        properties.put("layoutY", new SimpleDoubleProperty(LAYOUT_Y));
-        return (B)this;
-    }
-
-    public final B translateX(final double TRANSLATE_X) {
-        properties.put("translateX", new SimpleDoubleProperty(TRANSLATE_X));
-        return (B)this;
-    }
-    public final B translateY(final double TRANSLATE_Y) {
-        properties.put("translateY", new SimpleDoubleProperty(TRANSLATE_Y));
+    public final B minHeight(final double minHeight) {
+        properties.put("minHeight", new SimpleDoubleProperty(minHeight));
         return (B)this;
     }
 
-    public final B padding(final Insets INSETS) {
-        properties.put("padding", new SimpleObjectProperty<>(INSETS));
+    public final B maxWidth(final double maxWidth) {
+        properties.put("maxWidth", new SimpleDoubleProperty(maxWidth));
+        return (B)this;
+    }
+    public final B maxHeight(final double maxHeight) {
+        properties.put("maxHeight", new SimpleDoubleProperty(maxHeight));
+        return (B)this;
+    }
+
+    public final B scaleX(final double scaleX) {
+        properties.put("scaleX", new SimpleDoubleProperty(scaleX));
+        return (B)this;
+    }
+    public final B scaleY(final double scaleY) {
+        properties.put("scaleY", new SimpleDoubleProperty(scaleY));
+        return (B)this;
+    }
+
+    public final B layoutX(final double layoutX) {
+        properties.put("layoutX", new SimpleDoubleProperty(layoutX));
+        return (B)this;
+    }
+    public final B layoutY(final double layoutY) {
+        properties.put("layoutY", new SimpleDoubleProperty(layoutY));
+        return (B)this;
+    }
+
+    public final B translateX(final double translateX) {
+        properties.put("translateX", new SimpleDoubleProperty(translateX));
+        return (B)this;
+    }
+    public final B translateY(final double translateY) {
+        properties.put("translateY", new SimpleDoubleProperty(translateY));
+        return (B)this;
+    }
+
+    public final B padding(final Insets insets) {
+        properties.put("padding", new SimpleObjectProperty<>(insets));
         return (B)this;
     }
 
     public final DotMatrix build() {
-        final DotMatrix CONTROL;
+        final DotMatrix control;
         if (properties.keySet().contains("cols") && properties.keySet().contains("rows")) {
             int cols = ((IntegerProperty) properties.get("cols")).get();
             int rows = ((IntegerProperty) properties.get("rows")).get();
-            CONTROL = new DotMatrix(cols, rows);
+            control = new DotMatrix(cols, rows);
         } else {
-            CONTROL = new DotMatrix();
+            control = new DotMatrix();
         }
 
         for (String key : properties.keySet()) {
             if ("prefSize".equals(key)) {
                 Dimension2D dim = ((ObjectProperty<Dimension2D>) properties.get(key)).get();
-                CONTROL.setPrefSize(dim.getWidth(), dim.getHeight());
+                control.setPrefSize(dim.getWidth(), dim.getHeight());
             } else if("minSize".equals(key)) {
                 Dimension2D dim = ((ObjectProperty<Dimension2D>) properties.get(key)).get();
-                CONTROL.setMinSize(dim.getWidth(), dim.getHeight());
+                control.setMinSize(dim.getWidth(), dim.getHeight());
             } else if("maxSize".equals(key)) {
                 Dimension2D dim = ((ObjectProperty<Dimension2D>) properties.get(key)).get();
-                CONTROL.setMaxSize(dim.getWidth(), dim.getHeight());
+                control.setMaxSize(dim.getWidth(), dim.getHeight());
             } else if("prefWidth".equals(key)) {
-                CONTROL.setPrefWidth(((DoubleProperty) properties.get(key)).get());
+                control.setPrefWidth(((DoubleProperty) properties.get(key)).get());
             } else if("prefHeight".equals(key)) {
-                CONTROL.setPrefHeight(((DoubleProperty) properties.get(key)).get());
+                control.setPrefHeight(((DoubleProperty) properties.get(key)).get());
             } else if("minWidth".equals(key)) {
-                CONTROL.setMinWidth(((DoubleProperty) properties.get(key)).get());
+                control.setMinWidth(((DoubleProperty) properties.get(key)).get());
             } else if("minHeight".equals(key)) {
-                CONTROL.setMinHeight(((DoubleProperty) properties.get(key)).get());
+                control.setMinHeight(((DoubleProperty) properties.get(key)).get());
             } else if("maxWidth".equals(key)) {
-                CONTROL.setMaxWidth(((DoubleProperty) properties.get(key)).get());
+                control.setMaxWidth(((DoubleProperty) properties.get(key)).get());
             } else if("maxHeight".equals(key)) {
-                CONTROL.setMaxHeight(((DoubleProperty) properties.get(key)).get());
+                control.setMaxHeight(((DoubleProperty) properties.get(key)).get());
             } else if("scaleX".equals(key)) {
-                CONTROL.setScaleX(((DoubleProperty) properties.get(key)).get());
+                control.setScaleX(((DoubleProperty) properties.get(key)).get());
             } else if("scaleY".equals(key)) {
-                CONTROL.setScaleY(((DoubleProperty) properties.get(key)).get());
+                control.setScaleY(((DoubleProperty) properties.get(key)).get());
             } else if ("layoutX".equals(key)) {
-                CONTROL.setLayoutX(((DoubleProperty) properties.get(key)).get());
+                control.setLayoutX(((DoubleProperty) properties.get(key)).get());
             } else if ("layoutY".equals(key)) {
-                CONTROL.setLayoutY(((DoubleProperty) properties.get(key)).get());
+                control.setLayoutY(((DoubleProperty) properties.get(key)).get());
             } else if ("translateX".equals(key)) {
-                CONTROL.setTranslateX(((DoubleProperty) properties.get(key)).get());
+                control.setTranslateX(((DoubleProperty) properties.get(key)).get());
             } else if ("translateY".equals(key)) {
-                CONTROL.setTranslateY(((DoubleProperty) properties.get(key)).get());
+                control.setTranslateY(((DoubleProperty) properties.get(key)).get());
             } else if ("padding".equals(key)) {
-                CONTROL.setPadding(((ObjectProperty<Insets>) properties.get(key)).get());
-            } else if("dotOnColor".equals(key)) {
-                CONTROL.setDotOnColor(((ObjectProperty<Color>) properties.get(key)).get());
-            } else if("dotOffColor".equals(key)) {
-                CONTROL.setDotOffColor(((ObjectProperty<Color>) properties.get(key)).get());
+                control.setPadding(((ObjectProperty<Insets>) properties.get(key)).get());
+            } else if("activeColor".equals(key)) {
+                control.setActiveColor(((ObjectProperty<Color>) properties.get(key)).get());
+            } else if("inactiveColor".equals(key)) {
+                control.setInactiveColor(((ObjectProperty<Color>) properties.get(key)).get());
             } else if ("dotShape".equals(key)) {
-                CONTROL.setDotShape(((ObjectProperty<DotShape>) properties.get(key)).get());
+                control.setDotShape(((ObjectProperty<DotShape>) properties.get(key)).get());
             } else if ("matrixFont".equals(key)) {
-                CONTROL.setMatrixFont(((ObjectProperty<MatrixFont>) properties.get(key)).get());
+                control.setMatrixFont(((ObjectProperty<MatrixFont>) properties.get(key)).get());
             } else if ("useSpacer".equals(key)) {
-                CONTROL.setUseSpacer(((BooleanProperty) properties.get(key)).get());
+                control.setUseSpacer(((BooleanProperty) properties.get(key)).get());
             } else if ("spacerSizeFactor".equals(key)) {
-                CONTROL.setSpacerSizeFactor(((DoubleProperty) properties.get(key)).get());
+                control.setSpacerSizeFactor(((DoubleProperty) properties.get(key)).get());
             } else if ("squareDots".equals(key)) {
-                CONTROL.setSquareDots(((BooleanProperty) properties.get(key)).get());
+                control.setSquareDots(((BooleanProperty) properties.get(key)).get());
             }
         }
-        return CONTROL;
+        return control;
     }
 }

@@ -37,7 +37,7 @@ import javafx.scene.Scene;
  * Date: 19.03.17
  * Time: 05:00
  */
-public class Demo extends Application {
+public class Demo1 extends Application {
     private static final int            LIME      = DotMatrix.convertToInt(Color.LIME);
     private static final int            RED       = DotMatrix.convertToInt(Color.RED);
     private static       int            noOfNodes = 0;
@@ -55,7 +55,7 @@ public class Demo extends Application {
         matrix            = DotMatrixBuilder.create()
                                             .prefSize(500, 50)
                                             .colsAndRows(128, 13)
-                                            .dotOnColor(Color.rgb(255, 55, 0))
+                                            .activeColor(Color.rgb(255, 55, 0))
                                             .dotShape(DotShape.ROUND)
                                             .matrixFont(MatrixFont8x8.INSTANCE)
                                             .useSpacer(false)

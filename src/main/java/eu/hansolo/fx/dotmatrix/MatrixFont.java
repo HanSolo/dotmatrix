@@ -24,5 +24,5 @@ public interface MatrixFont {
 
     int getCharacterHeight();
 
-    int[] getCharacter(final char CHAR);
+    int[] getCharacter(final char character);
 }
